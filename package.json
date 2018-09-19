@@ -7,7 +7,9 @@
     "start": "nodemon server.js --exec babel-node --presets es2015 --plugins transform-class-properties",
     "debug": "nodemon server.js --exec babel-node --presets es2015 --plugins transform-class-properties --inspect-brk",
     "flow": "flow",
-    "test": "jest"
+    "test": "jest",
+    "create-snaps-index": "babel-node ./elasticsearch/snapsMappings.js",
+    "load-mock-snaps": "babel-node ./elasticsearch/load_snaps.js"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -25,12 +27,17 @@
     "babel-core": "^6.26.3",
     "babel-polyfill": "^6.26.0",
     "casual": "^1.5.19",
+    "elastic-builder": "^2.0.2",
+    "elasticsearch": "^15.1.1",
     "graphql": "^14.0.2",
+    "lodash.assign": "^4.2.0",
+    "moment-random": "^1.0.4",
     "nodemon": "^1.17.3"
   },
   "devDependencies": {
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
+    "babel-preset-flow": "^6.23.0",
     "babel-preset-stage-0": "^6.24.1",
     "jest": "^22.4.3"
   },

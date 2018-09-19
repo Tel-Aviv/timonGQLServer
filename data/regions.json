@@ -1,0 +1,44 @@
+{
+    "regions": [ {
+            "id": 1,
+            "name": "Region 1",
+            "center": {
+                "lat": "32.066667",
+                "lon": "34.783333"
+            },
+            "cameras": [{
+                "id": "10",
+                "name": "Camera 10",
+                "location": {
+                  "lat": "32.066667",
+                  "lon": "34.783333"
+                }
+            }, {
+                "id": "11",
+                "name": "Camera 11",
+                "location": {
+                  "lat": "32.0669",
+                  "lon": "34.7836"
+                }
+            }]
+        }, {
+            "id": 2,
+            "name": "Region 2",
+            "center": {
+                "lat": "32.079824",
+                "lon": "34.767609"
+            },
+            "cameras": [{
+                "id": "21",
+                "name": "Camera 21",
+                "lat": "2",
+                "lon": "3"
+            }, {
+                "id": "22",
+                "name": "Camera 22",
+                "lat": "4.6",
+                "lon": "7.8"
+            }]
+        }
+    ]
+}
