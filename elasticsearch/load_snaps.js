@@ -27,20 +27,21 @@ const endDate = moment();
 
 const directions = ['in', 'out'];
 
-let record = {
-  cameraId: casual.random_element(cameraIds),
-  lpr: casual.random_element(vehicles).lpr,
-  direction: casual.random_element(directions),
-  vehicleType: casual.random_element(vehicles).type,
-  dateTime: momentRandom(endDate ,startDate)
-//   dayOfWeek: dayOfweek
-}
+for(let i = 0; i < 300000; i++) {
+  let record = {
+    cameraId: casual.random_element(cameraIds),
+    lpr: casual.random_element(vehicles).lpr,
+    direction: casual.random_element(directions),
+    vehicleType: casual.random_element(vehicles).type,
+    dateTime: momentRandom(endDate ,startDate)
+  }
 
- console.log(record);
+   console.log(record);
 
- bulk.push(
-   { index: {_index: 'snaps', _type: 'snap' } },
-   record);
+   bulk.push(
+     { index: {_index: 'snaps', _type: 'snap' } },
+     record);
+ }
 
  client.bulk({
    index: 'snaps',
