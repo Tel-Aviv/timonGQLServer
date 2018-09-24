@@ -7,7 +7,7 @@ const vehicleTypes = ['car', 'truck', 'motorbike', 'bus'];
 
 // Populate array of place licences
 const vehicles = [];
-for(let i=0; i<100; i++) {
+for(let i=0; i<1000; i++) {
   const a1 = ("00" + casual.integer(0, 99)).slice(-2);
   const a2 = ("000" + casual.integer(0, 999)).slice(-3);
   const a3 = ("00" + casual.integer(0, 99)).slice(-2);
@@ -27,7 +27,7 @@ const endDate = moment();
 
 const directions = ['in', 'out'];
 
-for(let i = 0; i < 300000; i++) {
+for(let i = 0; i < 500000; i++) {
   let record = {
     cameraId: casual.random_element(cameraIds),
     lpr: casual.random_element(vehicles).lpr,

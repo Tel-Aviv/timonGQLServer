@@ -52,6 +52,7 @@ export let typeDefs = gql`
     summaries(from: Date!, till: Date!): [Summary!]
 
     disrtibution(from: Date!, till: Date!): Serie
+    frequencyDistribution(from: Date!, till: Date!): Serie
   }
 
   type Query {

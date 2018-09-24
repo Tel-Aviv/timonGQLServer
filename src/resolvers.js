@@ -6,7 +6,8 @@ import esb from 'elastic-builder';
 import casual from 'casual';
 import client from '../elasticsearch/connection.js';
 
-import DayOfWeekDistribution from '../src/DayOfWeekDistribution';
+import DayOfWeekDistribution from './DayOfWeekDistribution';
+import FrequencyDistribution from './FrequencyDistribution';
 import Summary from '../src/Summary';
 import Serie from '../src/Serie';
 
@@ -74,6 +75,10 @@ export let resolvers = {
 
       return new DayOfWeekDistribution(region.regionId, from, till)
                  .execute();
+    },
+    frequencyDistribution(region, {from, till} : {from: Date, till: Date} ) : Serie {
+      return new FrequencyDistribution(region.regionId, from, till)
+                  .execute();
     }
   }
 }

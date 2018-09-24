@@ -5,6 +5,8 @@ client.indices.create({
     timeout: '10m',
     body: {
         "settings": {
+          "max_result_window": "200",
+          "max_inner_result_window": "200",
           "analysis": {
             "normalizer": {
               "my_normalizer": {
@@ -17,7 +19,7 @@ client.indices.create({
         }
     }
   }).then( resp => {
-    console.log("created: ",resp);
+    console.log("Index created: ",resp);
 
     client.indices.putMapping({
     index: 'snaps',
@@ -29,7 +31,7 @@ client.indices.create({
                     "type": "date"
                 },
                 "cameraId": {
-                    "type": "keyword"
+                    "type": "integer"
                 },
                 "LPR": {
                     "type": "keyword"
