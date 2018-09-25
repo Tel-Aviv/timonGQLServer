@@ -65,7 +65,7 @@ class ClusterDistribution {
             body: query
           }).then( response => {
 
-            console.log(response.aggregations.lprs.buckets);
+            //console.log(response.aggregations.lprs.buckets);
 
             const lprs = [];
 
@@ -75,8 +75,8 @@ class ClusterDistribution {
                   return moment(b.key_as_string);
               });
               let duration = events[1] - events[0];
-              let strDuration = moment.utc(duration).format("HH:mm:ss");
-              console.log(strDuration);
+              // let strDuration = moment.utc(duration).format("HH:mm:ss");
+              // console.log(strDuration);
 
               lprs.push({
                 lpr: bucket.key,
@@ -85,16 +85,16 @@ class ClusterDistribution {
             });
 
             // Calculate duration average for all lprs
-            let sum = lprs.reduce( (a, b) => {
-              return a.durarion + b.duration
-            });
-            let avgDuration = sum / lprs.length;
-            console.log(moment.utc(avgDuration).format("HH:mm:ss"));
+            let sum = 0;
+            sum = lprs.map( el => el.duration)
+                      .reduce( (first, second) => first + second )
+                      / lprs.length;
+            let avgDuration = moment.utc(sum).format("HH:mm:ss")
 
-            const labels = [];
-            const values = [];
+            const labels = ['Cluster1'];
+            const values = [avgDuration];
 
-            return new Serie(labels, values);
+            return new Serie(labels, [values]);
 
           });
 
