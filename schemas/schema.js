@@ -53,6 +53,7 @@ export let typeDefs = gql`
 
     disrtibution(from: Date!, till: Date!): Serie
     frequencyDistribution(from: Date!, till: Date!): Serie
+    clusterDistribution(from: Date!, till: Date!): Serie
   }
 
   type Query {

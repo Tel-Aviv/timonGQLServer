@@ -8,6 +8,7 @@ import client from '../elasticsearch/connection.js';
 
 import DayOfWeekDistribution from './DayOfWeekDistribution';
 import FrequencyDistribution from './FrequencyDistribution';
+import ClusterDistribution from './ClusterDistribution';
 import Summary from '../src/Summary';
 import Serie from '../src/Serie';
 
@@ -79,6 +80,10 @@ export let resolvers = {
     frequencyDistribution(region, {from, till} : {from: Date, till: Date} ) : Serie {
       return new FrequencyDistribution(region.regionId, from, till)
                   .execute();
+    },
+    clusterDistribution(region, {from, till} : {from: Date, till: Date} ) : Serie {
+      return new ClusterDistribution(region.regionId, from, till)
+                 .execute();
     }
   }
 }
