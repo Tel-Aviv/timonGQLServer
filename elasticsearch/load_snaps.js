@@ -7,7 +7,7 @@ const vehicleTypes = ['car', 'truck', 'motorbike', 'bus'];
 
 // Populate array of place licences
 const vehicles = [];
-for(let i=0; i<1000; i++) {
+for(let i=0; i<50000; i++) {
   const a1 = ("00" + casual.integer(0, 99)).slice(-2);
   const a2 = ("000" + casual.integer(0, 999)).slice(-3);
   const a3 = ("00" + casual.integer(0, 99)).slice(-2);
