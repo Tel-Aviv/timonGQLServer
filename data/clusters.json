@@ -1,0 +1,89 @@
+{
+  "clusters": [{
+    "id": 1,
+    "name": "חיץ דרומי",
+    "cameras": [{
+        "id": "99010",
+        "name": "South Perimeter Camera 1",
+        "location": {
+          "lat": "32.066667",
+          "lon": "34.783333"
+        }
+      }, {
+          "id": "99011",
+          "name": "South Perimeter Camera 2",
+          "location": {
+            "lat": "32.066667",
+            "lon": "34.783333"
+          }
+      }, {
+        "id": "99012",
+        "name": "South Perimeter Camera 3",
+        "location": {
+          "lat": "32.066667",
+          "lon": "34.783333"
+        }
+      }]
+  }, {
+    "id": 2,
+    "name": "חיץ צפוני",
+    "cameras": [{
+        "id": "99020",
+        "name": "North Perimeter Camera 1",
+        "location": {
+          "lat": "32.066667",
+          "lon": "34.783333"
+        }
+      }, {
+        "id": "99021",
+        "name": "North Perimeter Camera 2",
+        "location": {
+          "lat": "32.066667",
+          "lon": "34.783333"
+        }
+      }, {
+        "id": "99022",
+        "name": "North Perimeter Camera 3",
+        "location": {
+          "lat": "32.066667",
+          "lon": "34.783333"
+        }
+      }]
+  }, {
+    "id": 3,
+    "name": "חיץ מזרחי",
+    "cameras": [{
+        "id": "99030",
+        "name": "West Perimeter Camera 1",
+        "location": {
+          "lat": "32.066667",
+          "lon": "34.783333"
+        }
+    }]
+  }, {
+    "id": 4,
+    "name": "חיץ מערבי",
+    "cameras": [{
+        "id": "99040",
+        "name": "East Perimeter Camera 1",
+        "location": {
+          "lat": "32.066667",
+          "lon": "34.783333"
+        }
+    }, {
+        "id": "99041",
+        "name": "East Perimeter Camera 2",
+        "location": {
+          "lat": "32.066667",
+          "lon": "34.783333"
+        }
+    }, {
+        "id": "99042",
+        "name": "East Perimeter Camera 3",
+        "location": {
+          "lat": "32.066667",
+          "lon": "34.783333"
+        }
+    }]
+  }]
+}

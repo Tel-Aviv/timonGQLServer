@@ -1,5 +1,5 @@
 {
-  "name": "tmongqlserver",
+  "name": "timongqlserver",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -10,7 +10,7 @@
     "test": "jest",
     "create-snaps-index": "babel-node ./elasticsearch/snapsMappings.js",
     "load-mock-snaps": "babel-node ./elasticsearch/load_snaps.js",
-    "load-samples": "babel-node ./elasticsearch/load_samples.js"
+    "load-mock-snaps-sql": "babel-node ./elasticsearch/load_snaps_sql.js"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -33,6 +33,8 @@
     "graphql": "^14.0.2",
     "lodash.assign": "^4.2.0",
     "moment-random": "^1.0.4",
+    "mssql": "^4.2.1",
+    "mysql": "^2.16.0",
     "nodemon": "^1.17.3"
   },
   "devDependencies": {

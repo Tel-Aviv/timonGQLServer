@@ -56,7 +56,7 @@ class ClusterDistribution {
                 );
 
           let query = requestBody.toJSON();
-          console.log(JSON.stringify(query));
+          //console.log(JSON.stringify(query));
 
           return client.search({
             index: 'snaps',

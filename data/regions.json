@@ -7,14 +7,14 @@
                 "lon": "34.783333"
             },
             "cameras": [{
-                "id": "10",
+                "id": "11",
                 "name": "Camera 10",
                 "location": {
                   "lat": "32.066667",
                   "lon": "34.783333"
                 }
             }, {
-                "id": "11",
+                "id": "12",
                 "name": "Camera 11",
                 "location": {
                   "lat": "32.0669",
