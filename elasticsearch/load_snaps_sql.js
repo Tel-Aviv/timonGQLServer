@@ -5,9 +5,38 @@ import mysql from 'mysql';
 import casual from 'casual';
 import moment from 'moment';
 import momentRandom from 'moment-random';
+var myArgs = require('optimist').argv,
+    help1 = 'No target-load is specified. Add -t [ES|mySQL] to CLI',
+    help2 = 'No load size is specified. Add -s <number> to CLI';
 
 import regionData from '../data/regions.json';
 import clustersData from '../data/clusters.json';
+
+if( !myArgs.t ) {
+  console.log(help1);
+  process.exit(0);
+}
+if( !myArgs.s ) {
+  console.log(help2);
+  process.exit(0);
+}
+
+const clean = myArgs.c ? true : false;
+console.log(clean);
+
+const tokens = myArgs.t.split(',');
+//console.log(tokens);
+
+let loadToES = false;
+let res =tokens.find( token => {
+  return token == 'ES'
+});
+if( res );
+  loadToES = true;
+//console.log(loadToES);
+
+const loadSize = myArgs.s;
+console.log(loadSize);
 
 const config = {
   user: 'gql',
@@ -95,27 +124,32 @@ let bulk = [];
       } else {
 
            let sqlQuery = `delete from snaps.snaps where id > 0`;
-           conn.query(sqlQuery, (err, result) => {
-             if( err ) {
-               console.log(err);
-               process.exit(-1);
-             } else {
-               console.log(`mySQL Deleted: ${JSON.stringify(result.affectedRows)} rows`);
-             }
+           if( clean ) {
+             conn.query(sqlQuery, (err, result) => {
+               if( err ) {
+                 console.log(err);
+                 process.exit(-1);
+               } else {
+                 console.log(`mySQL Deleted: ${JSON.stringify(result.affectedRows)} rows`);
+               }
 
-           });
+             });
+          }
 
            let requestBody = esb.requestBodySearch()
                               .query(
                                   esb.matchAllQuery()
                               );
-           let response = await client.deleteByQuery({
-             index: "snaps",
-             scrollSize: 200,
-             body: requestBody.toJSON()
-           });
+           let response = {};
+           if( clean ) {
+            response = await client.deleteByQuery({
+               index: "snaps",
+               scrollSize: 200,
+               body: requestBody.toJSON()
+             });
+           };
 
-           for(let i = 0; i < 250000; i++) {
+           for(let i = 0; i < loadSize; i++) {
 
                // Insert two records with same lpr
                const lpr = casual.random_element(vehicles).lpr;

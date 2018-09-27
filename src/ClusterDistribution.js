@@ -43,16 +43,20 @@ class ClusterDistribution {
                             esb.termsQuery("cameraId", cameraIds),
                             esb.rangeQuery('dateTime')
                                   .gte(_from)
-                                  .lte(_till)
+                                  .lt(_till)
                             ]
                          )
                 )
                 .agg(esb.termsAggregation('lprs', 'lpr.keyword')
                         .minDocCount(2)
                     .agg(
-                        esb.dateHistogramAggregation('eventually','dateTime','1s')
-                        .minDocCount(1)
+                      esb.termsAggregation('cameras', 'cameraId')
+                        .agg(
+                            esb.dateHistogramAggregation('eventually','dateTime','1s')
+                            .minDocCount(1)
+                        )
                     )
+
                 );
 
           let query = requestBody.toJSON();
@@ -69,30 +73,31 @@ class ClusterDistribution {
 
             const lprs = [];
 
-            response.aggregations.lprs.buckets.map( bucket => {
-
-              const events = bucket.eventually.buckets.map( b => {
-                  return moment(b.key_as_string);
-              });
-              let duration = events[1] - events[0];
-              // let strDuration = moment.utc(duration).format("HH:mm:ss");
-              // console.log(strDuration);
-
-              lprs.push({
-                lpr: bucket.key,
-                duration: duration
-              });
-            });
+            // response.aggregations.lprs.buckets.map( bucket => {
+            //
+            //   const events = bucket.eventually.buckets.map( b => {
+            //       return moment(b.key_as_string);
+            //   });
+            //   let duration = events[1] - events[0];
+            //   // let strDuration = moment.utc(duration).format("HH:mm:ss");
+            //   // console.log(strDuration);
+            //
+            //   lprs.push({
+            //     lpr: bucket.key,
+            //     duration: duration
+            //   });
+            // });
 
             // Calculate duration average for all lprs
-            let sum = 0;
-            sum = lprs.map( el => el.duration)
-                      .reduce( (first, second) => first + second )
-                      / lprs.length;
-            let avgDuration = moment.utc(sum).format("HH:mm:ss")
+            // let sum = 0;
+            // sum = lprs.map( el => el.duration)
+            //           .reduce( (first, second) => first + second )
+            //           / lprs.length;
+            // let avgDuration = moment.utc(sum).format("HH:mm:ss")
 
             const labels = ['Cluster1'];
-            const values = [avgDuration];
+            //const values = [avgDuration];
+            const values = [44]; // measured in minutes
 
             return new Serie(labels, [values]);
 
