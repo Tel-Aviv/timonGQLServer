@@ -43,6 +43,8 @@ for(let i = 0; i < 500000; i++) {
      record);
  }
 
+ //console.log(`Bulk: ${JSON.stringify(bulk)}`);
+
  client.bulk({
    index: 'snaps',
    type: 'snap',

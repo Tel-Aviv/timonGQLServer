@@ -31,7 +31,7 @@ client.indices.create({
                     "type": "date"
                 },
                 "cameraId": {
-                    "type": "short"
+                    "type": "integer"
                 },
                 "LPR": {
                     "type": "keyword"
