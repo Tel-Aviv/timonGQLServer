@@ -79,8 +79,4 @@ setInterval(() => {
   };
   subject.next(record2);
 
-<<<<<<< HEAD
 }, 50);
-=======
-}, 5);
->>>>>>> 7741a64a767533fa3184a87416c6ce0e59fcd827

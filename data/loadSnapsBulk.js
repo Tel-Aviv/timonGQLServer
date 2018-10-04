@@ -38,16 +38,6 @@ if( res );
 const loadSize = myArgs.s;
 console.log(loadSize);
 
-const config = {
-  user: 'gql',
-  password: 'Dfnc94^*8',
-  server: 'localhost',
-  database: 'snaps',
-  options: {
-    encrypt: false
-  }
-};
-
 const mySqlConfig = {
   host: 'localhost',
   user: 'gql',

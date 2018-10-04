@@ -10,12 +10,8 @@
     "test": "jest",
     "create-snaps-index": "babel-node ./elasticsearch/snapsMappings.js",
     "load-mock-snaps": "babel-node ./elasticsearch/load_snaps.js",
-<<<<<<< HEAD
-    "load-mock-snaps-sql": "babel-node --max_old_space_size=8000 ./elasticsearch/load_snaps_sql.js -t ES,mySQL",
-=======
-    "load-mock-snaps-sql": "babel-node ./elasticsearch/load_snaps_sql.js -t ES,mySQL",
->>>>>>> 7741a64a767533fa3184a87416c6ce0e59fcd827
-    "loadSnaps": "babel-node ./data/loadSnaps.js"
+    "loadSnapsBulk": "babel-node --max_old_space_size=8192 ./data/loadSnapsBulk.js -t ES,mySQL",
+    "loadSnapsIntervals": "babel-node ./data/loadSnapsIntervals.js"
   },
   "jest": {
     "collectCoverageFrom": [

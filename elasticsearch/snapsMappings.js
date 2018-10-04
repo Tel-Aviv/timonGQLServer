@@ -33,7 +33,7 @@ client.indices.create({
                 "cameraId": {
                     "type": "integer"
                 },
-                "LPR": {
+                "lpr": {
                     "type": "keyword"
                 },
                 "vehicleType": {
