@@ -2,135 +2,116 @@
 import esb from 'elastic-builder';
 import client from '../elasticsearch/connection.js';
 import moment from 'moment';
-import Serie from './Serie.js';
+import Gate from './Gate.js';
 import regionsData from '../data/regions.json';
+import clustersData from '../data/clusters.json';
+import casual from 'casual';
 
 class ClusterDistribution {
 
     regionId: number
+    direction: string
     from: Date
     till: Date
 
     constructor(regionId: number,
-                  from: Date,
-                  till: Date) {
+                direction: string,
+                from: Date,
+                till: Date) {
       this.regionId = regionId;
+      this.direction = direction;
       this.from = from;
       this.till = till;
     }
 
-    execute() {
-          let region = regionsData.regions.find( _region => {
-            return _region.id == this.regionId
-          });
+    async getHits(cameraIds: [number]) {
 
-          const cameraIds = [21, 99010];
-          // region.cameras.map( camera => {
-          //   cameraIds.push(camera.id);
-          // });
+      const requestBody = ::this.requestBodySearch(cameraIds);
 
-          const _from = moment(this.from, 'DD/MM/YYYY').format('YYYY-MM-DD');
-          const _till = moment(this.till, 'DD/MM/YYYY').format('YYYY-MM-DD');
+      const response = await client.search({
+        index: 'snaps',
+        type: 'snap',
+        "size": 0, // omit hits from output
+        body: requestBody.toJSON()
+      });
+      //console.log(response);
+      return response.hits.total;
+    }
 
-          const requestBody = esb.requestBodySearch()
-                .query(
-                    esb.boolQuery()
-                        .must([
-                            esb.termQuery('direction', 'in'),
-                            //esb.matchQuery('lpr.keyword', '11-111-11')
-                        ])
-                        .filter([
-                            esb.termsQuery("cameraId", cameraIds),
-                            esb.rangeQuery('dateTime')
-                                  .gte(_from)
-                                  .lt(_till)
-                            ]
-                         )
-                )
-                .agg(esb.termsAggregation('lprs', 'lpr.keyword')
-                        .minDocCount(2)
-                    .agg(
-                      esb.termsAggregation('cameras', 'cameraId')
-                        .agg(
-                            esb.dateHistogramAggregation('eventually','dateTime','1s')
-                            .minDocCount(1)
-                        )
-                    )
+    requestBodySearch(cameraIds: [number]) {
 
-                );
+      const _from = moment(this.from, 'DD/MM/YYYY').format('YYYY-MM-DD');
+      const _till = moment(this.till, 'DD/MM/YYYY').format('YYYY-MM-DD');
+      const _direction = this.direction;
 
-          let query = requestBody.toJSON();
-          //console.log(JSON.stringify(query));
+      return esb.requestBodySearch()
+      .query(
+        esb.boolQuery()
+        .must([
+          esb.termQuery('direction', _direction),
+        ])
+        .filter([
+            esb.termsQuery('cameraId', cameraIds),
+            esb.rangeQuery('dateTime')
+                  .gte(_from)
+                  .lt(_till)
 
-          return client.search({
-            index: 'snaps',
-            type: 'snap',
-            "size": 0, // omit hits from output
-            body: query
-          }).then( response => {
+        ])
+      );
 
-            //console.log(response.aggregations.lprs.buckets);
+    }
 
-            const lprs = [];
+    async execute() {
 
-            response.aggregations.lprs.buckets.map( vehicle => {
+      let region = regionsData.regions.find( _region => {
+        return _region.id == this.regionId
+      });
 
-                let _vehicle = {
-                  lpr: vehicle.key,
-                  cameras: []
-                }
+      const cameras = [];
+      region.cameras.map( camera => {
+        cameras.push(camera);
+      });
 
-                let _cameras = [];
-                vehicle.cameras.buckets.map( camera => {
+      let gates = [];
 
-                  let _camera = {
-                    id: camera.key,
-                    snapTime: {}
-                  };
+      const promises = cameras.map( async(camera) => {
 
-                  camera.eventually.buckets.map( snap => {
-                    _camera.snapTime = moment(snap.key_as_string);
-                  });
+        const cameraId = parseInt(camera.id, 10);
+        let totalExternalCameras = [];
 
-                  _cameras.push(_camera);
-                });
-                _cameras.sort( (c1, c2) => {
-                  return c1.snapTime - c2.snapTime;
-                });
-                let diff = _cameras.map( c => c.snapTime )
-                        .reduce( (acc, curr, currIndex) => {
-                  return moment.duration(acc.diff(curr));
-                });
-                _vehicle.cameras = _cameras;
+        // North cluster ( index 1 in clusterData array)
+        let externalCameras = clustersData.clusters[1].cameras.map( c => parseInt(c.id, 10) );
+        let cameraIds = [...externalCameras, cameraId];
+        totalExternalCameras = [...totalExternalCameras, ...externalCameras, cameraId];
+        const northCluster = await ::this.getHits(cameraIds);
 
-            //   const events = bucket.eventually.buckets.map( b => {
-            //       return moment(b.key_as_string);
-            //   });
-            //   let duration = events[1] - events[0];
-            //   // let strDuration = moment.utc(duration).format("HH:mm:ss");
-            //   // console.log(strDuration);
-            //
-            //   lprs.push({
-            //     lpr: bucket.key,
-            //     duration: duration
-            //   });
-            });
+        // South cluster ( index 0 in clusterData array)
+        externalCameras = clustersData.clusters[0].cameras.map( c => parseInt(c.id, 10) );
+        cameraIds = [...externalCameras, cameraId];
+        totalExternalCameras = [...totalExternalCameras, ...externalCameras];
+        const southCluster = await ::this.getHits(cameraIds);
 
-            // Calculate duration average for all lprs
-            // let sum = 0;
-            // sum = lprs.map( el => el.duration)
-            //           .reduce( (first, second) => first + second )
-            //           / lprs.length;
-            // let avgDuration = moment.utc(sum).format("HH:mm:ss")
+        // East cluster ( index 2 in clusterData array)
+        externalCameras = clustersData.clusters[2].cameras.map( c => parseInt(c.id, 10) );
+        cameraIds = [...externalCameras, cameraId];
+        totalExternalCameras = [...totalExternalCameras, ...externalCameras];
+        const eastCluster = await ::this.getHits(cameraIds);
 
-            const labels = ['Cluster1'];
-            //const values = [avgDuration];
-            const values = [44]; // measured in minutes
+        const total = await ::this.getHits(totalExternalCameras);
 
-            return new Serie(labels, [values]);
+        // West cluster
+        let westCluster = 0;
 
-          });
+        const gate = new Gate(camera.name, total, northCluster, southCluster,
+                              eastCluster, westCluster);
+        gates = [...gates, gate];
 
+
+      });
+
+      await Promise.all(promises);
+
+      return gates;
     }
 };
 export default ClusterDistribution;

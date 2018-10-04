@@ -13,7 +13,7 @@ const mySQLSubscriber = async(snap) => {
     const sqlQuery = `insert into snaps.snaps (cameraId, lpr, direction, vehicleType, dateTime)
                       values(${snap.cameraId}, '${snap.lpr}', '${snap.direction}', '${snap.vehicleType}', '${snap.dateTime}')`;
     const result = await conn.query(sqlQuery);
-    console.log(`MySQL response: ${result.affectedRows}`);
+    //console.log(`MySQL response: ${result.affectedRows}`);
 
     await conn.end();
   } catch( err ) {

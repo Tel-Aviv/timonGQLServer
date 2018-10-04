@@ -79,4 +79,4 @@ setInterval(() => {
   };
   subject.next(record2);
 
-}, 5);
+}, 50);

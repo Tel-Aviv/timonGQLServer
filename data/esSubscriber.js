@@ -11,7 +11,7 @@ const esSubscriber = async(snap) => {
       body: snap
     });
 
-    console.log(`ES response: ${response.result}`);
+    //console.log(`ES response: ${response.result}`);
 } catch( err ) {
   console.error(`ES error: ${err}`);
 }
