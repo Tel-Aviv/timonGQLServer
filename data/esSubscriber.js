@@ -11,7 +11,11 @@ const esSubscriber = async(snap) => {
       body: snap
     });
 
+<<<<<<< HEAD
     //console.log(`ES response: ${response.result}`);
+=======
+    console.log(`ES response: ${response.result}`);
+>>>>>>> 7741a64a767533fa3184a87416c6ce0e59fcd827
 } catch( err ) {
   console.error(`ES error: ${err}`);
 }

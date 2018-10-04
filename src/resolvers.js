@@ -17,7 +17,7 @@ import regionsData from '../data/regions.json';
 
 export let resolvers = {
   Query: {
-    region: (_, {regionId}: {regionId: number}) => {
+    region: (_: any, {regionId}: {regionId: number}) => {
 
       let region = regionsData.regions.find( _region => {
         return _region.id == regionId
@@ -78,7 +78,7 @@ export let resolvers = {
       return new DayOfWeekDistribution(region.regionId, from, till)
                  .execute();
     },
-    frequencyDistribution(region, {from, till} : {from: Date, till: Date} ) : Serie {
+    frequencyDistribution(region, {from, till} : {from: Date, till: Date} ) : Promise<Serie> {
       return new FrequencyDistribution(region.regionId, from, till)
                   .execute();
     },

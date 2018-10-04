@@ -19,7 +19,7 @@ class FrequencyDistribution {
     this.till = till;
   }
 
-  async execute() {
+  async execute() : Promise<Serie> {
 
     // We are expecting large result-set produced during
     // ES queries in this method.
