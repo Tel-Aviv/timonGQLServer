@@ -6,6 +6,8 @@ import esb from 'elastic-builder';
 import casual from 'casual';
 import client from '../elasticsearch/connection.js';
 
+import VehicleTypeDistribution from  './VehicleTypeDistribution';
+import HourlyDistribution from './HourlyDistribution';
 import DayOfWeekDistribution from './DayOfWeekDistribution';
 import FrequencyDistribution from './FrequencyDistribution';
 import ClusterDistribution from './ClusterDistribution';
@@ -72,6 +74,14 @@ export let resolvers = {
       _summaries.push(new Summary(regionId, from, till, "PASSENGERS"));
       return _summaries;
 
+    },
+    hourlyDistribution(region, date: Date): Serie[] {
+      return new HourlyDistribution(region.regionId, date)
+                .execute();
+    },
+    vehicleTypeDistribution(region, date: Date): Serie {
+      return new VehicleTypeDistribution(region.regionId, date)
+                .execute();
     },
     dayOfWeekDisrtibution(region, {from, till} : {from: Date, till: Date} ) : Serie {
 
