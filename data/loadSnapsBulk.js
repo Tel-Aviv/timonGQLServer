@@ -1,4 +1,4 @@
-import client from './connection';
+import client from '../elasticsearch/connection';
 import esb from 'elastic-builder';
 import sql from 'mssql';
 import mysql from 'mysql';
@@ -82,30 +82,6 @@ clustersData.clusters.map( cluster => {
 
 let bulk = [];
 
-// for(let i = 0; i < 1; i++) {
-//
-//   let cameraId = casual.random_element(externalCameraIds);
-//   let dt = momentRandom(endDate ,startDate);
-// //   console.log(`${dt.format('YYYY-MM-DDTHH:mm:ss')}
-// // ${dt.eod.format('YYYY-MM-DDTHH:mm:ss')}`);
-//
-//   let snap = {
-//     cameraId: cameraId,
-//     dateTime: dt.format('YYYY-MM-DDTHH:mm:ss')
-//   };
-//   console.log(snap);
-//
-//   dt = momentRandom(dt.clone().endOf('day'), dt);
-//
-//   cameraId = casual.random_element(cameraIds);
-//   snap = {
-//     cameraId: cameraId,
-//     dateTime: dt.format('YYYY-MM-DDTHH:mm:ss')
-//   };
-//   console.log( snap );
-//
-// }
-
 ( async() => {
     const conn = mysql.createConnection(mySqlConfig);
     conn.connect( async(err) => {
@@ -167,7 +143,7 @@ let bulk = [];
                   dateTime: dt.format('YYYY-MM-DDTHH:mm:ss')
                 };
                 bulk.push(
-                   { index: {_index: 'snaps', _type: 'snap' } },
+                   { index: {_index: 'snaps', _type: 'doc' } },
                     record);
 
                 // same lpr, but different time within same date
@@ -192,14 +168,14 @@ let bulk = [];
                   dateTime: dt.format('YYYY-MM-DDTHH:mm:ss')
                 };
                 bulk.push(
-                   { index: {_index: 'snaps', _type: 'snap' } },
+                   { index: {_index: 'snaps', _type: 'doc' } },
                    record2);
 
            }
 
            response = await client.bulk({
              index: 'snaps',
-             type: 'snap',
+             type: 'doc',
              timeout: '10m',
              body: bulk
            });

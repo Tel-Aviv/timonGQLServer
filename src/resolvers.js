@@ -83,8 +83,12 @@ export let resolvers = {
                   .execute();
     },
     clusterDistribution(region, {direction, from, till} : {direction: String, from: Date, till: Date} ) : [Gate] {
-      return new ClusterDistribution(region.regionId, direction, from, till)
-                  .execute();
+      try {
+        return new ClusterDistribution(region.regionId, direction, from, till)
+                    .execute();
+      } catch( err ) {
+        throw new ApolloError(err);
+      }
     },
     lagsDistribution(region, {from, till} : {from: Date, till: Date} ) : Serie {
       return new LagsDistribution(region.regionId, from, till)

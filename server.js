@@ -5,6 +5,10 @@ const resolvers =  require('./src/resolvers.js').resolvers;
 const server = new ApolloServer({
     typeDefs,
     resolvers,
+    // formatError: error => {
+    //   console.error(error);
+    //   return new Error(error);
+    // }
   });
 
 // This `listen` method launches a web-server.  Existing apps

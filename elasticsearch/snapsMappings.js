@@ -23,7 +23,7 @@ client.indices.create({
 
     client.indices.putMapping({
     index: 'snaps',
-    type: 'snap',
+    type: 'doc',
     timeout: '10m',
     body: {
             "properties": {
