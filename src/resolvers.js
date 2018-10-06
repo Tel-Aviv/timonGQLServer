@@ -73,7 +73,7 @@ export let resolvers = {
       return _summaries;
 
     },
-    disrtibution(region, {from, till} : {from: Date, till: Date} ) : Serie {
+    dayOfWeekDisrtibution(region, {from, till} : {from: Date, till: Date} ) : Serie {
 
       return new DayOfWeekDistribution(region.regionId, from, till)
                  .execute();

@@ -67,7 +67,7 @@ export let typeDefs = gql`
     summary(from: Date!, till: Date!, kind: SummaryKind!): Summary,
     summaries(from: Date!, till: Date!): [Summary!]
 
-    disrtibution(from: Date!, till: Date!): Serie
+    dayOfWeekDisrtibution(from: Date!, till: Date!): Serie
     frequencyDistribution(from: Date!, till: Date!): Serie
     lagsDistribution(from: Date!, till: Date!): Serie
     clusterDistribution(direction: Direction!, from: Date!, till: Date!): [Gate]

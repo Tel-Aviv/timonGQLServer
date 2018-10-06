@@ -64,14 +64,15 @@ class DayOfWeekDistribution {
         }
       }`);
 
+    //console.log(JSON.stringify(query));
+
     return client.search({
       index: 'snaps',
-      type: 'snap',
-      "size": 0, // omit hits from output
+      size: 0, // omit hits from output
       body: query
     }).then( response => {
 
-      console.log(response.aggregations.myAgg.buckets);
+      //console.log(response.aggregations.myAgg.buckets);
 
       const labels = [];
       const values = [];
