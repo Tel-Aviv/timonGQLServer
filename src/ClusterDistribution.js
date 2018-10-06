@@ -1,11 +1,23 @@
 // @flow
 import esb from 'elastic-builder';
+import _ from 'lodash';
 import client from '../elasticsearch/connection.js';
 import moment from 'moment';
 import Gate from './Gate.js';
 import regionsData from '../data/regions.json';
 import clustersData from '../data/clusters.json';
-import casual from 'casual';
+
+function getCluster(cameraId: number){
+
+  return clustersData.clusters.find( cluster => (
+    cluster.cameras.find( camera => ( camera.id === cameraId ) )
+  ));
+
+};
+
+const externalCameraIds = _.flatten(clustersData.clusters.map( cluster =>
+      cluster.cameras.map( camera => camera.id )
+));
 
 class ClusterDistribution {
 
@@ -30,11 +42,12 @@ class ClusterDistribution {
 
       try {
 
-        const snaps = [];
+        let snaps = [];
 
         let response = await client.search({
           index: 'snaps',
           type: 'doc',
+          _source: ["dateTime", "lpr", "cameraId"], 
           scroll: '10s',
           size: 2000,
           body: requestBody.toJSON()
@@ -42,7 +55,7 @@ class ClusterDistribution {
 
         while( response.hits.total !== snaps.length ) {
 
-          snaps.push(...response.hits.hits);
+          snaps = [...snaps, ...response.hits.hits];
 
           response = await client.scroll({
               scrollId: response._scroll_id,
@@ -78,7 +91,9 @@ class ClusterDistribution {
                   .lt(_till)
 
         ])
-      );
+      )
+      .sort(esb.sort('lpr', 'asc'))
+      .sort(esb.sort('dateTime', 'asc'));;
 
 
     }
@@ -89,7 +104,6 @@ class ClusterDistribution {
         return _region.id == this.regionId
       });
 
-      let externalCameraIds = [99010, 99011, 99020, 99021, 99022, 99030]; // TBD
       const promises = region.cameras.map( async(camera) => {
 
           try {
@@ -98,11 +112,26 @@ class ClusterDistribution {
 
             const snaps = await ::this.getSnaps(camerasIds);
 
-            const total = snaps.length;
-            const northCluster = casual.integer(50000, 70000);
-            const southCluster = casual.integer(50000, 70000);
-            const eastCluster = casual.integer(50000, 70000);
-            const westCluster = 0;
+            const clusters = [0, // totals
+                             0,0,0,0]; // other clusters
+
+            for(let i = 0; i < snaps.length - 1; // neglect last snap in favor of non-checking length
+                i++) {
+              const cluster = getCluster(snaps[i]._source.cameraId);
+              if( cluster ) {
+
+                if( snaps[i+1]._source.cameraId == cameraId ) {
+                  clusters[0]++; // totals
+                  clusters[cluster.id]++;
+                }
+
+              } else {
+                continue; // no pair for this external camera
+              }
+
+            }
+
+            let [total, southCluster, northCluster, eastCluster, westCluster] = clusters;
 
             return new Gate(camera.name, total, northCluster, southCluster,
                             eastCluster, westCluster);
@@ -112,50 +141,9 @@ class ClusterDistribution {
           }
 
       });
+
       return await Promise.all(promises);
-      //console.log(gates);
-
-      // let gates = [];
-      // const promises = cameras.map( async(camera) => {
-      //
-      //   const cameraId = parseInt(camera.id, 10);
-      //   let totalExternalCameras = [];
-      //
-      //   // North cluster ( index 1 in clusterData array)
-      //   let externalCameras = clustersData.clusters[1].cameras.map( c => parseInt(c.id, 10) );
-      //   let cameraIds = [...externalCameras, cameraId];
-      //   totalExternalCameras = [...totalExternalCameras, ...externalCameras, cameraId];
-      //
-      //
-      //   const northCluster = await ::this.getHits(cameraIds);
-      //
-      //   // South cluster ( index 0 in clusterData array)
-      //   externalCameras = clustersData.clusters[0].cameras.map( c => parseInt(c.id, 10) );
-      //   cameraIds = [...externalCameras, cameraId];
-      //   totalExternalCameras = [...totalExternalCameras, ...externalCameras];
-      //   const southCluster = await ::this.getHits(cameraIds);
-      //
-      //   // East cluster ( index 2 in clusterData array)
-      //   externalCameras = clustersData.clusters[2].cameras.map( c => parseInt(c.id, 10) );
-      //   cameraIds = [...externalCameras, cameraId];
-      //   totalExternalCameras = [...totalExternalCameras, ...externalCameras];
-      //   const eastCluster = await ::this.getHits(cameraIds);
-      //
-      //   const total = await ::this.getHits(totalExternalCameras);
-      //
-      //   // West cluster
-      //   let westCluster = 0;
-      //
-      //   const gate = new Gate(camera.name, total, northCluster, southCluster,
-      //                         eastCluster, westCluster);
-      //   gates = [...gates, gate];
-      //
-      //
-      // });
-      //
-      // await Promise.all(promises);
-
-      //return gates;
     }
 };
+
 export default ClusterDistribution;
