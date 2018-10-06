@@ -95,7 +95,6 @@ class ClusterDistribution {
       .sort(esb.sort('lpr', 'asc'))
       .sort(esb.sort('dateTime', 'asc'));;
 
-
     }
 
     calcOutDistribution(snaps, cameraId) {

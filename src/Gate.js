@@ -1,7 +1,9 @@
 // @flow
+import casual from 'casual';
 
 class Gate {
 
+  id: string
   cameraName: string
   Total: number
   NorthCluster: number
@@ -16,6 +18,7 @@ class Gate {
               eastCluster: number,
               westCluster: number) {
 
+      this.id = casual.uuid;
       this.cameraName = cameraName;
       this.Total = total;
       this.NorthCluster = northCluster;
