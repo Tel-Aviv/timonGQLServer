@@ -47,7 +47,7 @@ class ClusterDistribution {
         let response = await client.search({
           index: 'snaps',
           type: 'doc',
-          _source: ["dateTime", "lpr", "cameraId"], 
+          _source: ["dateTime", "lpr", "cameraId"],
           scroll: '10s',
           size: 2000,
           body: requestBody.toJSON()
@@ -98,6 +98,105 @@ class ClusterDistribution {
 
     }
 
+    calcOutDistribution(snaps, cameraId) {
+
+      const clusters = [0, // totals
+                       0,0,0,0]; // other clusters
+
+      while( snaps.length - 1 )  { // neglect last snap in favor of non-checking length
+
+        let snap = snaps.shift();
+        if( snap._source.cameraId == cameraId ) {
+          let snap2 = snaps.shift();
+          const cluster = getCluster(snap2._source.cameraId);
+          if( cluster ) {
+            clusters[0]++; // totals
+            clusters[cluster.id]++;
+          } else {
+            snaps.unshift(snap2);
+          }
+        }
+
+      }
+
+      return clusters;
+
+    }
+
+    _calcOutDistribution(snaps, cameraId) {
+
+        const clusters = [0, // totals
+                         0,0,0,0]; // other clusters
+
+        for(let i = 0; i < snaps.length - 1; // neglect last snap in favor of non-checking length
+            i++) {
+
+          if( snaps[i]._source.cameraId == cameraId ) {
+            const cluster = getCluster(snaps[i+1]._source.cameraId);
+            if( cluster ) {
+                clusters[0]++; // totals
+                clusters[cluster.id]++;
+            }
+          } else {
+            continue;
+          }
+
+        }
+
+        return clusters;
+
+    }
+
+    calcInDistribution(snaps, cameraId) {
+
+      const clusters = [0, // totals
+                       0,0,0,0]; // other clusters
+
+      while( snaps.length - 1 )  { // neglect last snap in favor of non-checking length
+
+        let snap = snaps.shift();
+        const cluster = getCluster(snap._source.cameraId);
+        if( cluster ) {
+          let snap2 = snaps.shift();
+          if( snap2._source.cameraId == cameraId ) {
+            clusters[0]++; // totals
+            clusters[cluster.id]++;
+          } else {
+            snaps.unshift(snap2);
+          }
+        }
+
+      }
+
+      return clusters;
+
+    }
+
+    _calcInDistribution(snaps, cameraId) {
+
+      const clusters = [0, // totals
+                       0,0,0,0]; // other clusters
+
+      for(let i = 0; i < snaps.length - 1; // neglect last snap in favor of non-checking length
+          i++) {
+        const cluster = getCluster(snaps[i]._source.cameraId);
+        if( cluster ) {
+
+          if( snaps[i+1]._source.cameraId == cameraId ) {
+            clusters[0]++; // totals
+            clusters[cluster.id]++;
+          }
+
+        } else {
+          continue; // no pair for this external camera
+        }
+
+      }
+
+      return clusters;
+
+    }
+
     async execute() {
 
       let region = regionsData.regions.find( _region => {
@@ -111,25 +210,9 @@ class ClusterDistribution {
             const camerasIds = [...externalCameraIds, cameraId];
 
             const snaps = await ::this.getSnaps(camerasIds);
-
-            const clusters = [0, // totals
-                             0,0,0,0]; // other clusters
-
-            for(let i = 0; i < snaps.length - 1; // neglect last snap in favor of non-checking length
-                i++) {
-              const cluster = getCluster(snaps[i]._source.cameraId);
-              if( cluster ) {
-
-                if( snaps[i+1]._source.cameraId == cameraId ) {
-                  clusters[0]++; // totals
-                  clusters[cluster.id]++;
-                }
-
-              } else {
-                continue; // no pair for this external camera
-              }
-
-            }
+            const clusters = ( this.direction === 'IN' ) ?
+                            ::this._calcInDistribution(snaps, cameraId) :
+                            ::this._calcOutDistribution(snaps, cameraId);
 
             let [total, southCluster, northCluster, eastCluster, westCluster] = clusters;
 
