@@ -24,16 +24,13 @@ class ClusterDistribution {
       this.till = till;
     }
 
-    async getSnaps(externalCameraIds, camera) {
+    async getSnaps(camerasIds: [number]) {
 
-      const cameraId = parseInt(camera.id, 10);
-      const cameraIds = [...externalCameraIds, cameraId];
-
-      const requestBody = ::this.requestBodySearch(cameraIds);
+      const requestBody = ::this.requestBodySearch(camerasIds);
 
       try {
 
-        const allSnaps = [];
+        const snaps = [];
 
         let response = await client.search({
           index: 'snaps',
@@ -43,9 +40,9 @@ class ClusterDistribution {
           body: requestBody.toJSON()
         });
 
-        while( response.hits.total !== allSnaps.length ) {
+        while( response.hits.total !== snaps.length ) {
 
-          allSnaps.push(...response.hits.hits);
+          snaps.push(...response.hits.hits);
 
           response = await client.scroll({
               scrollId: response._scroll_id,
@@ -54,33 +51,12 @@ class ClusterDistribution {
 
         };
 
-        const total = allSnaps.length;
-        const northCluster = casual.integer(50000, 70000);
-        const southCluster = casual.integer(50000, 70000);
-        const eastCluster = casual.integer(50000, 70000);
-        const westCluster = casual.integer(50000, 70000);
-
-        return new Gate(camera.name, total, northCluster, southCluster,
-                                eastCluster, westCluster);
+        return snaps;
 
       } catch( err ) {
         console.error(err);
         throw err;
       }
-    }
-
-    async getHits(cameraIds: [number]) {
-
-      const requestBody = ::this.requestBodySearch(cameraIds);
-
-      const response = await client.search({
-        index: 'snaps',
-        type: 'doc',
-        "size": 0, // omit hits from output
-        body: requestBody.toJSON()
-      });
-      //console.log(response);
-      return response.hits.total;
     }
 
     requestBodySearch(cameraIds: [number]) {
@@ -113,16 +89,24 @@ class ClusterDistribution {
         return _region.id == this.regionId
       });
 
-      const cameras = [];
-      region.cameras.map( camera => {
-        cameras.push(camera);
-      });
-
-      let externalCameras = [];
-      const promises = cameras.map( async(camera) => {
+      let externalCameraIds = [99010, 99011, 99020, 99021, 99022, 99030]; // TBD
+      const promises = region.cameras.map( async(camera) => {
 
           try {
-            return await ::this.getSnaps(externalCameras, camera);
+            const cameraId = parseInt(camera.id, 10);
+            const camerasIds = [...externalCameraIds, cameraId];
+
+            const snaps = await ::this.getSnaps(camerasIds);
+
+            const total = snaps.length;
+            const northCluster = casual.integer(50000, 70000);
+            const southCluster = casual.integer(50000, 70000);
+            const eastCluster = casual.integer(50000, 70000);
+            const westCluster = 0;
+
+            return new Gate(camera.name, total, northCluster, southCluster,
+                            eastCluster, westCluster);
+
           } catch( err ) {
             return Promise.reject(err);
           }
