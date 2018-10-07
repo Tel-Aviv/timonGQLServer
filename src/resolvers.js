@@ -5,6 +5,7 @@ import moment from 'moment';
 import esb from 'elastic-builder';
 import casual from 'casual';
 import client from '../elasticsearch/connection.js';
+import clustersData from '../data/clusters.json';
 
 import VehicleTypeDistribution from  './VehicleTypeDistribution';
 import HourlyDistribution from './HourlyDistribution';
@@ -12,8 +13,9 @@ import DayOfWeekDistribution from './DayOfWeekDistribution';
 import FrequencyDistribution from './FrequencyDistribution';
 import IntersectionDistribution from './IntersectionDistribution';
 import LagsDistribution from './LagsDistribution';
-import Summary from '../src/Summary';
-import Serie from '../src/Serie';
+import Summary from './Summary';
+import Serie from './Serie';
+import Cluster from './Cluster';
 
 import regionsData from '../data/regions.json';
 
@@ -58,6 +60,13 @@ export let resolvers = {
         });
       });
       return _regions;
+    },
+    clusters: ()=> {
+      return clustersData.clusters.map( (cluster) => {
+         return new Cluster(cluster.id,
+                            cluster.name,
+                            cluster.cameras.map(camera => parseInt(camera.id, 10)))
+      })
     }
   },
   Region: {
@@ -103,6 +112,14 @@ export let resolvers = {
     lagsDistribution(region, {from, till} : {from: Date, till: Date} ) : Serie {
       return new LagsDistribution(region.regionId, from, till)
                  .execute();
+    }
+  },
+  Cluster: {
+    ins(cluster, {from, till} : {from: Date, till: Date} ) {
+      return cluster.execute(from, till, "IN");
+    },
+    outs(cluster, {from, till} : {from: Date, till: Date} ) {
+      return cluster.execute(from, till, "OUT");
     }
   }
 }

@@ -30,6 +30,11 @@ export let typeDefs = gql`
     values: [[Int]]
   }
 
+  type SingleSerie {
+    labels: [String]
+    values: [Int]
+  }
+
   type Camera implements INode {
     id: ID!
     cameraId: Int
@@ -51,15 +56,17 @@ export let typeDefs = gql`
   type Gate implements INode {
     id: ID!
 
-    ins: Int
-    outs: Int
+    ins(from: Date!, till: Date!): Int
+    outs(from: Date!, till: Date!): Int
   }
 
   type Cluster implements INode {
     id: ID!
 
-    ins: Int
-    outs: Int
+    name: String!
+
+    ins(from: Date!, till: Date!): Int
+    outs(from: Date!, till: Date!): Int
 
     gates: [Gate]
   }
@@ -85,7 +92,7 @@ export let typeDefs = gql`
 
     dayOfWeekDisrtibution(from: Date!, till: Date!): Serie
     hourlyDistribution(date: Date!): [Serie]
-    vehicleTypeDistribution(date: Date!): Serie
+    vehicleTypeDistribution(date: Date!): SingleSerie
     frequencyDistribution(from: Date!, till: Date!): Serie
     lagsDistribution(from: Date!, till: Date!): Serie
     intersectionDistribution(direction: Direction!, from: Date!, till: Date!): [Intersection]
@@ -95,7 +102,8 @@ export let typeDefs = gql`
   type Query {
     region(regionId: Int!): Region,
     regions: [Region]
-    clusters(date: Date!) : [Cluster]
+    clusters: [Cluster]
+    cluster(clusterId: Int!): Cluster
   }
 
 `;

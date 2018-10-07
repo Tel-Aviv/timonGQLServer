@@ -2,7 +2,7 @@
 import esb from 'elastic-builder';
 import client from '../elasticsearch/connection.js';
 import moment from 'moment';
-import Serie from './Serie';
+import SingleSerie from './SingleSerie';
 
 class VehicleTypeDistribution {
 
@@ -18,8 +18,8 @@ class VehicleTypeDistribution {
   execute() {
 
     const labels = ['cars', 'tracks', 'buses'];
-    const values = [[34, 209, 33]];
-    return new Serie(labels,values);
+    const values = [34, 209, 33];
+    return new SingleSerie(labels,values);
   }
 
 };
