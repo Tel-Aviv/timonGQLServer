@@ -12,7 +12,7 @@ export let typeDefs = gql`
     IN,
     OUT,
     CROSS,
-    PASSENGERS
+    PEOPLE
   }
 
   enum Direction {

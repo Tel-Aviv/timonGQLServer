@@ -80,7 +80,7 @@ export let resolvers = {
       _summaries.push(new Summary(regionId, from, till, "IN"));
       _summaries.push(new Summary(regionId, from, till, "OUT"));
       _summaries.push(new Summary(regionId, from, till, "CROSS"));
-      _summaries.push(new Summary(regionId, from, till, "PASSENGERS"));
+      _summaries.push(new Summary(regionId, from, till, "PEOPLE"));
       return _summaries;
 
     },
