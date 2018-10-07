@@ -37,7 +37,7 @@ export let typeDefs = gql`
     location: GeoCenter!
   }
 
-  type Gate implements INode {
+  type Intersection implements INode {
     id: ID!
 
     cameraName: String
@@ -46,6 +46,22 @@ export let typeDefs = gql`
     NorthCluster: Int
     EastCluster: Int
     WestCluster: Int
+  }
+
+  type Gate implements INode {
+    id: ID!
+
+    ins: Int
+    outs: Int
+  }
+
+  type Cluster implements INode {
+    id: ID!
+
+    ins: Int
+    outs: Int
+
+    gates: [Gate]
   }
 
   type Summary implements INode {
@@ -72,12 +88,14 @@ export let typeDefs = gql`
     vehicleTypeDistribution(date: Date!): Serie
     frequencyDistribution(from: Date!, till: Date!): Serie
     lagsDistribution(from: Date!, till: Date!): Serie
-    clusterDistribution(direction: Direction!, from: Date!, till: Date!): [Gate]
+    intersectionDistribution(direction: Direction!, from: Date!, till: Date!): [Intersection]
+
   }
 
   type Query {
     region(regionId: Int!): Region,
     regions: [Region]
+    clusters(date: Date!) : [Cluster]
   }
 
 `;

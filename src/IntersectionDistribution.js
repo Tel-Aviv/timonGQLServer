@@ -19,7 +19,7 @@ const externalCameraIds = _.flatten(clustersData.clusters.map( cluster =>
       cluster.cameras.map( camera => camera.id )
 ));
 
-class ClusterDistribution {
+class IntersectionDistribution {
 
     regionId: number
     direction: string
@@ -228,4 +228,4 @@ class ClusterDistribution {
     }
 };
 
-export default ClusterDistribution;
+export default IntersectionDistribution;

@@ -10,7 +10,7 @@ import VehicleTypeDistribution from  './VehicleTypeDistribution';
 import HourlyDistribution from './HourlyDistribution';
 import DayOfWeekDistribution from './DayOfWeekDistribution';
 import FrequencyDistribution from './FrequencyDistribution';
-import ClusterDistribution from './ClusterDistribution';
+import IntersectionDistribution from './IntersectionDistribution';
 import LagsDistribution from './LagsDistribution';
 import Summary from '../src/Summary';
 import Serie from '../src/Serie';
@@ -92,9 +92,9 @@ export let resolvers = {
       return new FrequencyDistribution(region.regionId, from, till)
                   .execute();
     },
-    clusterDistribution(region, {direction, from, till} : {direction: String, from: Date, till: Date} ) : [Gate] {
+    intersectionDistribution(region, {direction, from, till} : {direction: String, from: Date, till: Date} ) : [Gate] {
       try {
-        return new ClusterDistribution(region.regionId, direction, from, till)
+        return new IntersectionDistribution(region.regionId, direction, from, till)
                     .execute();
       } catch( err ) {
         throw new ApolloError(err);
