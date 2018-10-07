@@ -1,7 +1,7 @@
 {
   "clusters": [{
     "id": 1,
-    "name": "חיץ דרומי",
+    "name": "South Cluster",
     "cameras": [{
         "id": "99010",
         "name": "South Perimeter Camera 1",
@@ -26,7 +26,7 @@
       }]
   }, {
     "id": 2,
-    "name": "חיץ צפוני",
+    "name": "North Cluster",
     "cameras": [{
         "id": "99020",
         "name": "North Perimeter Camera 1",
@@ -51,7 +51,7 @@
       }]
   }, {
     "id": 3,
-    "name": "חיץ מזרחי",
+    "name": "East Cluster",
     "cameras": [{
         "id": "99030",
         "name": "West Perimeter Camera 1",
@@ -62,7 +62,7 @@
     }]
   }, {
     "id": 4,
-    "name": "חיץ מערבי",
+    "name": "West Cluster",
     "cameras": [{
         "id": "99040",
         "name": "East Perimeter Camera 1",

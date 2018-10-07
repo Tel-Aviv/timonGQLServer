@@ -63,7 +63,7 @@ class Cluster {
   //
   //   values.push(serie);
 
-    return 111;
+    return casual.integer(20000, 70000);
   };
 };
 

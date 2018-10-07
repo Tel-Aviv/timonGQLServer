@@ -64,6 +64,7 @@ export let typeDefs = gql`
     id: ID!
 
     name: String!
+    clusterId: Int!
 
     ins(from: Date!, till: Date!): Int
     outs(from: Date!, till: Date!): Int
