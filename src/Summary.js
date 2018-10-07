@@ -53,10 +53,10 @@ class Summary {
                 ])
       );
 
+    // console.log(JSON.stringify(requestBody.toJSON()));
 
     return client.search({
       index: 'snaps',
-      type: 'snap',
       body: requestBody.toJSON()
     }).then( response => {
       return response.hits.total;
