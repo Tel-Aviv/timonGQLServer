@@ -3,7 +3,7 @@ import esb from 'elastic-builder';
 import _ from 'lodash';
 import client from '../elasticsearch/connection.js';
 import moment from 'moment';
-import Gate from './Gate.js';
+import Intersection from './Intersection.js';
 import regionsData from '../data/regions.json';
 import clustersData from '../data/clusters.json';
 
@@ -48,7 +48,7 @@ class IntersectionDistribution {
           index: 'snaps',
           type: 'doc',
           _source: ["dateTime", "lpr", "cameraId"],
-          scroll: '10s',
+          scroll: '60s',
           size: 2000,
           body: requestBody.toJSON()
         });
@@ -215,7 +215,7 @@ class IntersectionDistribution {
 
             let [total, southCluster, northCluster, eastCluster, westCluster] = clusters;
 
-            return new Gate(camera.name, total, northCluster, southCluster,
+            return new Intersection(camera.name, total, northCluster, southCluster,
                             eastCluster, westCluster);
 
           } catch( err ) {
