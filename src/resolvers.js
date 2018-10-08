@@ -16,6 +16,7 @@ import LagsDistribution from './LagsDistribution';
 import Summary from './Summary';
 import Serie from './Serie';
 import Cluster from './Cluster';
+import Gate from './Gate';
 
 import regionsData from '../data/regions.json';
 
@@ -61,11 +62,27 @@ export let resolvers = {
       });
       return _regions;
     },
+    cluster: (_: any, {clusterId} : {clusterId: number}) => {
+      let cluster = clustersData.clusters.find( _cluster => {
+        return _cluster.id == clusterId
+      });
+      return new Cluster(cluster.id,
+                  cluster.name,
+                  cluster.cameras.map(camera => parseInt(camera.id, 10)))
+    },
     clusters: ()=> {
-      return clustersData.clusters.map( (cluster) => {
+      return clustersData.clusters.map( cluster => {
+
          return new Cluster(cluster.id,
                             cluster.name,
-                            cluster.cameras.map(camera => parseInt(camera.id, 10)))
+                             cluster.cameras.map(camera => {
+
+                                  return {
+                                          cameraId: parseInt(camera.id, 10),
+                                            name: camera.name
+                                          }
+                             })
+                            )
       })
     }
   },
@@ -101,7 +118,7 @@ export let resolvers = {
       return new FrequencyDistribution(region.regionId, from, till)
                   .execute();
     },
-    intersectionDistribution(region, {direction, from, till} : {direction: String, from: Date, till: Date} ) : [Gate] {
+    intersectionDistribution(region, {direction, from, till} : {direction: String, from: Date, till: Date} ) : [Intersection] {
       try {
         return new IntersectionDistribution(region.regionId, direction, from, till)
                     .execute();
@@ -115,11 +132,22 @@ export let resolvers = {
     }
   },
   Cluster: {
-    ins(cluster, {from, till} : {from: Date, till: Date} ) {
+    ins(cluster: Cluster, {from, till} : {from: Date, till: Date} ) {
       return cluster.execute(from, till, "IN");
     },
-    outs(cluster, {from, till} : {from: Date, till: Date} ) {
+    outs(cluster: Cluster, {from, till} : {from: Date, till: Date} ) {
       return cluster.execute(from, till, "OUT");
+    },
+    gates(cluster){
+      return cluster.cameras.map(c => new Gate(c));
+    }
+  },
+  Gate: {
+    ins(gate: Gate, {from, till} : {from: Date, till: Date} ) {
+      return gate.execute(from, till, "IN");
+    },
+    outs(gate: Gate, {from, till} : {from: Date, till: Date} ) {
+      return gate.execute(from, till, "OUT");
     }
   }
 }

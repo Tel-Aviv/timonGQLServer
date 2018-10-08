@@ -4,18 +4,17 @@ import moment from 'moment';
 import esb from 'elastic-builder';
 import client from '../elasticsearch/connection.js';
 
-import Gate from './Gate';
 
 class Cluster {
 
-  id: String
+  id: string
   clusterId: number
   name: string
-  cameras: [number]
+  cameras: [any]
 
   constructor( clusterId: number,
                name: string,
-               cameras: [number]) {
+               cameras: [any]) {
 
     this.id = casual.uuid;
     this.clusterId = clusterId;
@@ -23,47 +22,34 @@ class Cluster {
     this.cameras = cameras;
   }
 
-  execute(from: Date, till: Date) {
+  execute(from: Date, till: Date, direction: String, all: boolean) {
 
     const _from = moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD');
     const _till = moment(till, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    const _cameraIds = this.cameras.map(c => c.cameraId )
 
     const requestBody = esb.requestBodySearch()
     .query(
       esb.boolQuery()
         .must(
-                esb.matchQuery("direction", "IN"),
+                esb.matchQuery("direction", direction),
               )
         .filter([
-                  esb.termsQuery("cameraId", this.cameras),
+                  esb.termsQuery("cameraId", _cameraIds),
                   esb.rangeQuery('dateTime')
                     .gte(_from)
                     .lt(_till)
               ])
     );
 
-  //console.log(JSON.stringify(query));
-
-  // return client.search({
-  //   index: 'snaps',
-  //   size: 0, // omit hits from output
-  //   body: query
-  // }).then( response => {
-  //
-  //   //console.log(response.aggregations.myAgg.buckets);
-  //
-  //   const labels = [];
-  //   const values = [];
-  //   const serie = [];
-  //
-  //   response.aggregations.myAgg.buckets.map( doc => {
-  //     labels.push(doc.key);
-  //     serie.push(doc.doc_count);
-  //   });
-  //
-  //   values.push(serie);
-
-    return casual.integer(20000, 70000);
+    let query = requestBody.toJSON();
+    return client.search({
+      index: 'snaps',
+      size: 0, 
+      body: query
+    }).then( response => {
+      return response.hits.total;
+    });
   };
 };
 

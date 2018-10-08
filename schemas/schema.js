@@ -56,6 +56,7 @@ export let typeDefs = gql`
   type Gate implements INode {
     id: ID!
 
+    name: String
     ins(from: Date!, till: Date!): Int
     outs(from: Date!, till: Date!): Int
   }

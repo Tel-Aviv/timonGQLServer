@@ -1,32 +1,59 @@
 // @flow
 import casual from 'casual';
+import moment from 'moment';
+import esb from 'elastic-builder';
+import client from '../elasticsearch/connection.js';
 
 class Gate {
 
   id: string
-  cameraName: string
-  Total: number
-  NorthCluster: number
-  SouthCluster: number
-  EastCluster: number
-  WestCluster: number
 
-  constructor(cameraName: string,
-              total: number,
-              northCluster: number,
-              southCluster: number,
-              eastCluster: number,
-              westCluster: number) {
+  cameraId: number
+  name: string
+
+  constructor({cameraId, name}) {
 
       this.id = casual.uuid;
-      this.cameraName = cameraName;
-      this.Total = total;
-      this.NorthCluster = northCluster;
-      this.SouthCluster = southCluster;
-      this.EastCluster = eastCluster;
-      this.WestCluster = westCluster;
+      this.name = name;
+      this.cameraId = cameraId;
   }
 
+  execute(from: Date, till: Date, direction: String) {
+
+    const _from = moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    const _till = moment(till, 'DD/MM/YYYY').format('YYYY-MM-DD');
+
+
+    const requestBody = esb.requestBodySearch()
+    .query(
+      esb.boolQuery()
+        .must(
+                esb.matchQuery("direction", direction),
+              )
+        .filter([
+                  esb.termsQuery("cameraId", this.cameraId),
+                  esb.rangeQuery('dateTime')
+                    .gte(_from)
+                    .lt(_till)
+              ])
+    );
+
+    let query = requestBody.toJSON();
+    return client.search({
+      index: 'snaps',
+      size: 0, 
+      body: query
+    }).then( response => {
+    
+      return response.hits.total;
+    });
+  
+    // response.aggregations.cameras.buckets.map( doc => {
+
+    // });
+  
+
+  };
 };
 
 export default Gate;
