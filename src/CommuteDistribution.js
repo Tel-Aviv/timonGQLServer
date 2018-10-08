@@ -126,8 +126,8 @@ class CommuteDistribution {
         }
       }`);
 
-      // const _query = JSON.stringify(query)
-      // console.log(_query);
+      const _query = JSON.stringify(query)
+      console.log(_query);
 
       let response = await client.search({
         index: 'snaps',
