@@ -88,7 +88,8 @@ export let typeDefs = gql`
     center: GeoCenter
     cameras: [Camera]
 
-    name: String,
+    name: String
+
     summary(from: Date!, till: Date!, kind: SummaryKind!): Summary,
     summaries(from: Date!, till: Date!): [Summary!]
 
@@ -98,7 +99,6 @@ export let typeDefs = gql`
     commuteDistribution(from: Date!, till: Date!): Serie
     lagsDistribution(from: Date!, till: Date!): Serie
     intersectionDistribution(direction: Direction!, from: Date!, till: Date!): [Intersection]
-
   }
 
   type Query {

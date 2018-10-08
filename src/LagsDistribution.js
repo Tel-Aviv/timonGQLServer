@@ -65,7 +65,6 @@ class LagsDistribution {
 
           return client.search({
             index: 'snaps',
-            type: 'snap',
             "size": 0, // omit hits from output
             body: query
           }).then( response => {
@@ -135,3 +134,5 @@ class LagsDistribution {
     }
 
 }
+
+export default LagsDistribution;
