@@ -95,7 +95,7 @@ export let typeDefs = gql`
     dayOfWeekDisrtibution(from: Date!, till: Date!): Serie
     hourlyDistribution(date: Date!): [Serie]
     vehicleTypeDistribution(date: Date!): SingleSerie
-    frequencyDistribution(from: Date!, till: Date!): Serie
+    commuteDistribution(from: Date!, till: Date!): Serie
     lagsDistribution(from: Date!, till: Date!): Serie
     intersectionDistribution(direction: Direction!, from: Date!, till: Date!): [Intersection]
 

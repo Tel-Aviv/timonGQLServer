@@ -5,7 +5,7 @@ import esb from 'elastic-builder';
 import moment from 'moment';
 import Serie from './Serie.js';
 
-class FrequencyDistribution {
+class CommuteDistribution {
 
   regionId: number
   from: Date
@@ -49,19 +49,18 @@ class FrequencyDistribution {
     // We use cardinality aggregation because we're interested
     // in distinct lprs. Such distinct lprs will be accounted to firat histogram.
     let requestBody = esb.requestBodySearch()
-                      .agg(esb.cardinalityAggregation('lprs', 'lpr.keyword')
+                      .agg(esb.cardinalityAggregation('lprs', 'lpr')
                                .precisionThreshold(40000));
     let results = await client.search({
       index: 'snaps',
-      type: 'snap',
       size: 0,
       body: requestBody.toJSON()
     });
 
     const totalVehicles = results.aggregations.lprs.value;
-    console.log(`Cardinality: ${totalVehicles}`);
+    // console.log(`Cardinality: ${totalVehicles}`);
 
-    const partitionSize = 2000;
+    const partitionSize = 100000;
     const totalPartitions = Math.floor(totalVehicles/partitionSize);
 
     requestBody = esb.requestBodySearch()
@@ -91,7 +90,7 @@ class FrequencyDistribution {
       query.aggs = JSON.parse(`{
         "lprs": {
           "terms": {
-            "field": "lpr.keyword",
+            "field": "lpr",
             "include": {
               "partition": ${currentPartition},
               "num_partitions": ${totalPartitions}
@@ -132,11 +131,10 @@ class FrequencyDistribution {
 
       let response = await client.search({
         index: 'snaps',
-        type: 'snap',
         body: query
       });
 
-      console.log(`Current partition: ${currentPartition}. # Buckets: ${response.aggregations.lprs.buckets.length}`);
+      // console.log(`Current partition: ${currentPartition}. # Buckets: ${response.aggregations.lprs.buckets.length}`);
 
       const counts = response.aggregations.lprs.buckets.map( bucket => {
         return bucket.frequency.count
@@ -174,4 +172,4 @@ class FrequencyDistribution {
 
 };
 
-export default FrequencyDistribution;
+export default CommuteDistribution;

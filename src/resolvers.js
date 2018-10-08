@@ -10,7 +10,7 @@ import clustersData from '../data/clusters.json';
 import VehicleTypeDistribution from  './VehicleTypeDistribution';
 import HourlyDistribution from './HourlyDistribution';
 import DayOfWeekDistribution from './DayOfWeekDistribution';
-import FrequencyDistribution from './FrequencyDistribution';
+import CommuteDistribution from './CommuteDistribution';
 import IntersectionDistribution from './IntersectionDistribution';
 import LagsDistribution from './LagsDistribution';
 import Summary from './Summary';
@@ -114,8 +114,8 @@ export let resolvers = {
       return new DayOfWeekDistribution(region.regionId, from, till)
                  .execute();
     },
-    frequencyDistribution(region, {from, till} : {from: Date, till: Date} ) : Promise<Serie> {
-      return new FrequencyDistribution(region.regionId, from, till)
+    commuteDistribution(region, {from, till} : {from: Date, till: Date} ) : Promise<Serie> {
+      return new CommuteDistribution(region.regionId, from, till)
                   .execute();
     },
     intersectionDistribution(region, {direction, from, till} : {direction: String, from: Date, till: Date} ) : [Intersection] {
