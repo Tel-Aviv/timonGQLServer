@@ -4,24 +4,24 @@
     "name": "South Cluster",
     "cameras": [{
         "id": "99010",
-        "name": "South Perimeter Camera 1",
+        "name": "Jerusalem Blvd.",
         "location": {
-          "lat": "32.066667",
-          "lon": "34.783333"
+          "lat": "32.038276",
+          "lon": "34.755618"
         }
       }, {
           "id": "99011",
-          "name": "South Perimeter Camera 2",
+          "name": "Holon Interchange",
           "location": {
-            "lat": "32.066667",
-            "lon": "34.783333"
+            "lat": "32.038682",
+            "lon": "34.777943"
           }
       }, {
         "id": "99012",
-        "name": "South Perimeter Camera 3",
+        "name": "Kibutz Galuit",
         "location": {
-          "lat": "32.066667",
-          "lon": "34.783333"
+          "lat": "32.047046",
+          "lon": "34.783358"
         }
       }]
   }, {
@@ -29,24 +29,24 @@
     "name": "North Cluster",
     "cameras": [{
         "id": "99020",
-        "name": "North Perimeter Camera 1",
+        "name": "Namir",
         "location": {
-          "lat": "32.066667",
-          "lon": "34.783333"
+          "lat": "32.103078",
+          "lon": "34.792674"
         }
       }, {
         "id": "99021",
-        "name": "North Perimeter Camera 2",
+        "name": "Rokach",
         "location": {
-          "lat": "32.066667",
-          "lon": "34.783333"
+          "lat": "32.101333",
+          "lon": "34.800301"
         }
       }, {
         "id": "99022",
-        "name": "North Perimeter Camera 3",
+        "name": "Shai Agnon",
         "location": {
-          "lat": "32.066667",
-          "lon": "34.783333"
+          "lat": "32.101899",
+          "lon": "34.781923"
         }
       }]
   }, {
@@ -54,36 +54,29 @@
     "name": "East Cluster",
     "cameras": [{
         "id": "99030",
-        "name": "West Perimeter Camera 1",
+        "name": "Zabotinsly",
         "location": {
-          "lat": "32.066667",
-          "lon": "34.783333"
+          "lat": "32.082887",
+          "lon": "34.803129"
+        }
+    }, {
+        "id": "99031",
+        "name": "Kaplan/David Elazar",
+        "location": {
+          "lat": "32.073295",
+          "lon": "34.788113"
+        }
+    }, {
+        "id": "99032",
+        "name": "La Guardia",
+        "location": {
+          "lat": "32.059263",
+          "lon": "34.785586"
         }
     }]
   }, {
     "id": 4,
     "name": "West Cluster",
-    "cameras": [{
-        "id": "99040",
-        "name": "East Perimeter Camera 1",
-        "location": {
-          "lat": "32.066667",
-          "lon": "34.783333"
-        }
-    }, {
-        "id": "99041",
-        "name": "East Perimeter Camera 2",
-        "location": {
-          "lat": "32.066667",
-          "lon": "34.783333"
-        }
-    }, {
-        "id": "99042",
-        "name": "East Perimeter Camera 3",
-        "location": {
-          "lat": "32.066667",
-          "lon": "34.783333"
-        }
-    }]
+    "cameras": []
   }]
 }

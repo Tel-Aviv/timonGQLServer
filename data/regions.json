@@ -1,43 +1,47 @@
 {
     "regions": [ {
             "id": 1,
-            "name": "Region 1",
+            "name": "Ibn Gvirol",
             "center": {
-                "lat": "32.066667",
-                "lon": "34.783333"
+                "lat": "32.087123",
+                "lon": "34.782131"
             },
             "cameras": [{
                 "id": "11",
-                "name": "Camera 10",
+                "name": "Ibn Gvirol/Zabotinsky",
                 "location": {
-                  "lat": "32.066667",
-                  "lon": "34.783333"
+                  "lat": "32.088161",
+                  "lon": "34.782330"
                 }
             }, {
                 "id": "12",
-                "name": "Camera 11",
+                "name": "Arlozorov",
                 "location": {
-                  "lat": "32.0669",
-                  "lon": "34.7836"
+                  "lat": "32.085154",
+                  "lon": "34.781786"
                 }
             }]
         }, {
             "id": 2,
-            "name": "Region 2",
+            "name": "Kaplan",
             "center": {
-                "lat": "32.079824",
-                "lon": "34.767609"
+                "lat": "32.072263",
+                "lon": "34.781904"
             },
             "cameras": [{
                 "id": "21",
-                "name": "Camera 21",
-                "lat": "2",
-                "lon": "3"
+                "name": "Kaplan/Ibn Gvirol",
+                "location": {
+                  "lat": "32.073491",
+                  "lon": "34.781841"
+                }
             }, {
                 "id": "22",
-                "name": "Camera 22",
-                "lat": "4.6",
-                "lon": "7.8"
+                "name": "Marmorek",
+                "location": {
+                  "lat": "32.071098",
+                  "lon": "34.781920"
+                }
             }]
         }
     ]

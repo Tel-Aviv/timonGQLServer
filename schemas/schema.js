@@ -67,6 +67,8 @@ export let typeDefs = gql`
     name: String!
     clusterId: Int!
 
+    cameras: [Camera]
+
     ins(from: Date!, till: Date!): Int
     outs(from: Date!, till: Date!): Int
 

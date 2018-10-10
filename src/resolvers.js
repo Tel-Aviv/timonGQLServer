@@ -17,6 +17,7 @@ import Summary from './Summary';
 import Serie from './Serie';
 import Cluster from './Cluster';
 import Gate from './Gate';
+import Camera from './Camera';
 
 import regionsData from '../data/regions.json';
 
@@ -39,10 +40,7 @@ export let resolvers = {
           id: casual.uuid,
           name: camera.name,
           cameraId: camera.id,
-          location:  {
-            lat: camera.lat,
-            lon: camera.lon
-          }
+          location: camera.location
         }
       });
       _region.regionId = region.id;
@@ -67,22 +65,17 @@ export let resolvers = {
         return _cluster.id == clusterId
       });
       return new Cluster(cluster.id,
-                  cluster.name,
-                  cluster.cameras.map(camera => parseInt(camera.id, 10)))
+                         cluster.name,
+                         cluster.cameras.map( camera => new Camera(camera) )
+                       )
     },
     clusters: ()=> {
       return clustersData.clusters.map( cluster => {
 
          return new Cluster(cluster.id,
                             cluster.name,
-                             cluster.cameras.map(camera => {
-
-                                  return {
-                                          cameraId: parseInt(camera.id, 10),
-                                            name: camera.name
-                                          }
-                             })
-                            )
+                            cluster.cameras.map( camera => new Camera(camera) )
+                          )
       })
     }
   },

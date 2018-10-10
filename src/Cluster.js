@@ -45,7 +45,7 @@ class Cluster {
     let query = requestBody.toJSON();
     return client.search({
       index: 'snaps',
-      size: 0, 
+      size: 0,
       body: query
     }).then( response => {
       return response.hits.total;
