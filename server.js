@@ -10,10 +10,8 @@ app.use('*', cors({
                     origin: '*'
                   })
        );
-//app.use(express.static('data'));
 
 app.get('/data/:name', (req, res) => {
-  //console.log(req);
 
   const options = {
     root: __dirname + '/data/',

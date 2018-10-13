@@ -77,6 +77,9 @@ export let resolvers = {
                             cluster.cameras.map( camera => new Camera(camera) )
                           )
       })
+    },
+    keplerDataUrl: (_: any, {from, till} : {from: Date, till: Date}) => {
+      return 'http://localhost:4000/data/tlv-trips.csv';
     }
   },
   Region: {

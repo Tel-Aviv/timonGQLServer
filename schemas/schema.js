@@ -108,6 +108,9 @@ export let typeDefs = gql`
     regions: [Region]
     clusters: [Cluster]
     cluster(clusterId: Int!): Cluster
+
+    keplerDataUrl(from: Date!, till: Date!): String
+
   }
 
 `;
