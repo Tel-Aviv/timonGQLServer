@@ -1,0 +1,5 @@
+export default `first_camera_id,tpep_pickup_datetime,second_camera_id,tpep_dropoff_datetime,passenger_count,trip_distance,pickup_longitude,pickup_latitude,dropoff_longitude,dropoff_latitude,fare_amount,tip_amount,total_amount,icon
+99010,2018-01-15 14:00:41 +00:00,11,2018-01-15 14:11:18 +00:00,1,1.64,34.755618,32.038276,34.782131,32.087123,8.5,0,9.3,accel
+99011,2018-01-15 16:37:19 +00:00,11,2018-01-15 16:41:59 +00:00,1,0.8,34.777943,32.038682,34.782131,32.087123,5,1.7,8.5,accel
+99012,2018-01-15 12:00:40 +00:00,12,2018-01-15 13:19:26 +00:00,1,0.8,34.783358,32.047046,34.782131,32.087123,5,1.7,8.5,accel
+`;

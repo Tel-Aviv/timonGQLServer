@@ -1,5 +1,5 @@
 // @flow
-import { ApolloError } from 'apollo-server';
+import { ApolloError } from 'apollo-server-express';
 import assign from 'lodash.assign';
 import moment from 'moment';
 import esb from 'elastic-builder';
