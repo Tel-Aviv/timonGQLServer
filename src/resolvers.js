@@ -18,6 +18,7 @@ import Serie from './Serie';
 import Cluster from './Cluster';
 import Gate from './Gate';
 import Camera from './Camera';
+import KeplerData from './KeplerData';
 
 import regionsData from '../data/regions.json';
 
@@ -79,7 +80,7 @@ export let resolvers = {
       })
     },
     keplerDataUrl: (_: any, {from, till} : {from: Date, till: Date}) => {
-      return 'http://localhost:4000/data/tlv-trips.csv';
+      return new KeplerData(from, till).getUrl();
     }
   },
   Region: {

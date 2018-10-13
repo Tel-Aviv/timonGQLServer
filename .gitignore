@@ -57,3 +57,6 @@ typings/
 
 # dotenv environment variables file
 .env
+
+#produced kepler data files
+/data/*.csv

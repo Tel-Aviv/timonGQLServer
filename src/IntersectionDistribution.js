@@ -59,7 +59,7 @@ class IntersectionDistribution {
 
           response = await client.scroll({
               scrollId: response._scroll_id,
-              scroll: '10s'
+              scroll: '60s'
           });
 
         };
