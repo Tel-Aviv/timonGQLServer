@@ -93,7 +93,7 @@ class IntersectionDistribution {
         ])
       )
       .sort(esb.sort('lpr', 'asc'))
-      .sort(esb.sort('dateTime', 'asc'));;
+      .sort(esb.sort('dateTime', 'asc'));
 
     }
 

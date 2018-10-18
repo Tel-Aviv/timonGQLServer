@@ -1,5 +1,7 @@
 // @flow
 import { ApolloError } from 'apollo-server-express';
+import { GraphQLScalarType } from 'graphql';
+import { Kind } from 'graphql/language';
 import assign from 'lodash.assign';
 import moment from 'moment';
 import esb from 'elastic-builder';
@@ -15,6 +17,7 @@ import IntersectionDistribution from './IntersectionDistribution';
 import LagsDistribution from './LagsDistribution';
 import Summary from './Summary';
 import Serie from './Serie';
+import SingleSerie from './SingleSerie';
 import Cluster from './Cluster';
 import Gate from './Gate';
 import Camera from './Camera';
@@ -22,7 +25,23 @@ import KeplerData from './KeplerData';
 
 import regionsData from '../data/regions.json';
 
-export let resolvers = {
+export const resolvers = {
+  Date: new GraphQLScalarType({
+    name: 'Date',
+    description: 'Date custom scalar type',
+    parseValue(value) {
+      return moment(value, 'DD/MM/YYYY');
+    },
+    serialize(value: moment) {
+      return value.format('DD/MM/YYYY');// value sent to the client
+    },
+    parseLiteral(ast) {
+      if (ast.kind === Kind.INT) {
+        return parseInt(ast.value, 10); // ast value is always in string format
+      }
+      return null;
+    }
+  }),
   Query: {
     region: (_: any, {regionId}: {regionId: number}) => {
 
@@ -98,11 +117,17 @@ export let resolvers = {
       return _summaries;
 
     },
-    hourlyDistribution(region, date: Date): Serie[] {
+    hourlyDistribution(region, { date }: { date: Date }, context): Serie[] {
+      if( !context.user || !context.user.roles.includes('admin') )
+        return null;
+
       return new HourlyDistribution(region.regionId, date)
                 .execute();
     },
-    vehicleTypeDistribution(region, date: Date): Serie {
+    vehicleTypeDistribution(region, { date }: { date: moment }, context): SingleSerie {
+      if( !context.user || !context.user.roles.includes('admin') )
+        return null;
+
       return new VehicleTypeDistribution(region.regionId, date)
                 .execute();
     },

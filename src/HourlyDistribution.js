@@ -8,10 +8,10 @@ import Serie from './Serie.js';
 class HourlyDistribution {
 
   regionId: number
-  date: Date
+  date: moment
 
   constructor(regionId: number,
-              date: Date) {
+              date: moment) {
     this.regionId = regionId;
     this.date = date;
   }
@@ -28,11 +28,8 @@ class HourlyDistribution {
       cameraIds.push(camera.id);
     });
 
-    // const tomorrow = moment(this.date, 'DD/MM/YYYY'); //.add(1, 'days');
-    const _from = moment('07/09/2018', 'DD/MM/YYYY').format('YYYY-MM-DD');
-    // const _till = tomorrow.format('YYYY-MM-DD');
-    // const _from = '2018-09-24';
-    const _till = '2018-09-08';
+    const _from = this.date.format('YYYY-MM-DD');
+    const _till = this.date.clone().add(1, 'day').format('YYYY-MM-DD');
 
     const series = [];
 

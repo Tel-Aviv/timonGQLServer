@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-const { ApolloServer, MockList } = require('apollo-server-express');
+const { ApolloServer, MockList, AuthenticationError } = require('apollo-server-express');
+import base64 from 'base-64';
 const typeDefs =  require('./schemas/schema.js').typeDefs;
 const resolvers =  require('./src/resolvers.js').resolvers;
 
@@ -31,10 +32,31 @@ app.get('/data/:name', (req, res) => {
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    // formatError: error => {
-    //   console.error(error);
-    //   return new Error(error);
-    // }
+    context: ({ req }) => {
+        // get the user token from the headers
+        const authHeader = req.headers.authorization || '';
+
+        if( authHeader ) {
+
+          let tokens = authHeader.split(' ');
+          if( tokens[0] !== 'Basic') {
+            throw new AuthenticationError('You should provide Basic Authorization Header');
+          } else {
+
+            var encoded = base64.decode(tokens[1]);
+            tokens = encoded.split(':');
+
+            return {
+              user: {
+                roles: ['admin'],
+                email: tokens[0]
+              }
+            };
+          }
+        } else {
+          throw new AuthenticationError('You should provide Basic Authorization Header');
+        }
+      }
   });
 
 server.applyMiddleware({ app, path: '/' });
@@ -42,9 +64,3 @@ server.applyMiddleware({ app, path: '/' });
 const httpServer = app.listen({ port: 4000 }, () => {
   console.log(`🚀  Server ready at port ${httpServer.address().port}`);
 })
-
-// This `listen` method launches a web-server.  Existing apps
-// can utilize middleware options, which we'll discuss later.
-// server.listen().then(({ url }) => {
-//   console.log(`🚀  Server ready at ${url}`);
-// });

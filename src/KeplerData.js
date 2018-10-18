@@ -136,11 +136,13 @@ class KeplerData {
 
     csvStream.end();
 
-    const hostname = os.hostname();
-    const dnsResolve = util.promisify(dns.resolve);
-    const records = await dnsResolve(hostname, 'A');
+    // const hostname = os.hostname();
+    // const dnsResolve = util.promisify(dns.resolveAny);
+    // const records = await dnsResolve(hostname);
+    // console.log(records);
 
-    return `http://${records[0]}:4000${fileName}`;
+    // return `http://${records[0]}:4000${fileName}`;
+    return `http://localhost:4000${fileName}`;
   }
 
   async getUrl() {

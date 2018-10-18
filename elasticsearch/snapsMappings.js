@@ -5,7 +5,7 @@ client.indices.create({
     timeout: '10m',
     body: {
         "settings": {
-          "max_result_window": "200",
+          "max_result_window": "2000",
           "max_inner_result_window": "200",
           "analysis": {
             "normalizer": {
