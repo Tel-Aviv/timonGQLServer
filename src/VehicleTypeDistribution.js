@@ -1,4 +1,5 @@
 // @flow
+import 'babel-polyfill';
 import esb from 'elastic-builder';
 import client from '../elasticsearch/connection.js';
 import moment from 'moment';

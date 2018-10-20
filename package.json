@@ -2,10 +2,15 @@
   "name": "timongqlserver",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "./lib/server.js",
   "scripts": {
-    "start": "nodemon server.js --exec babel-node --presets es2015 --plugins transform-class-properties",
-    "debug": "nodemon server.js --exec babel-node --presets es2015 --plugins transform-class-properties --inspect-brk",
+    "build": "webpack -d",
+
+    "pre-build": "babel ./src ./schemas -d lib --source-maps",
+    "serve": "yarn pre-build && nodemon --experimental-worker --inspect-brk",
+
+    "start": "nodemon ./src/server.js --exec babel-node --presets es2015 --plugins transform-class-properties",
+    "debug": "nodemon ./src/server.js --exec babel-node --presets es2015 --plugins transform-class-properties --inspect-brk",
     "flow": "flow",
     "test": "jest",
     "create-snaps-index": "babel-node ./elasticsearch/snapsMappings.js",
@@ -26,7 +31,8 @@
   "license": "ISC",
   "dependencies": {
     "apollo-server-express": "^2.1.0",
-    "babel-core": "^6.26.3",
+    "babel-core": "6.26.0",
+    "babel-loader": "7.1.2",
     "babel-polyfill": "^6.26.0",
     "base-64": "^0.1.0",
     "casual": "^1.5.19",
@@ -44,14 +50,17 @@
     "optimist": "^0.6.1",
     "promise-mysql": "^3.3.1",
     "rxjs": "^6.3.3",
-    "stream-to-promise": "^2.2.0"
+    "stream-to-promise": "^2.2.0",
+    "webpack": "4.6.0",
+    "webworker-threads": "^0.7.17"
   },
   "devDependencies": {
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-flow": "^6.23.0",
     "babel-preset-stage-0": "^6.24.1",
-    "jest": "^22.4.3"
+    "jest": "^22.4.3",
+    "webpack-cli": "^3.1.2"
   },
   "babel": {
     "presets": [

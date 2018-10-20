@@ -19,7 +19,7 @@ class DayOfWeekDistribution {
     this.till = till;
   }
 
-  execute() {
+  async execute() {
 
     let region = regionsData.regions.find( _region => {
       return _region.id == this.regionId
@@ -66,11 +66,13 @@ class DayOfWeekDistribution {
 
     //console.log(JSON.stringify(query));
 
-    return client.search({
-      index: 'snaps',
-      size: 0, // omit hits from output
-      body: query
-    }).then( response => {
+    try {
+
+      const response = await client.search({
+        index: 'snaps',
+        size: 0, // omit hits from output
+        body: query
+      });
 
       //console.log(response.aggregations.myAgg.buckets);
 
@@ -86,7 +88,12 @@ class DayOfWeekDistribution {
       values.push(serie);
 
       return new Serie(labels, values);
-    });
+
+    } catch ( err ) {
+      console.error(err);
+      throw err;
+    }
+
   }
 
 };

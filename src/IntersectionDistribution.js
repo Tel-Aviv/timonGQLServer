@@ -1,4 +1,5 @@
 // @flow
+const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
 import esb from 'elastic-builder';
 import _ from 'lodash';
 import client from '../elasticsearch/connection.js';

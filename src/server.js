@@ -2,8 +2,8 @@ import express from 'express';
 import cors from 'cors';
 const { ApolloServer, MockList, AuthenticationError } = require('apollo-server-express');
 import base64 from 'base-64';
-const typeDefs =  require('./schemas/schema.js').typeDefs;
-const resolvers =  require('./src/resolvers.js').resolvers;
+import typeDefs from './schema.js';
+const resolvers = require('./resolvers.js').resolvers;
 
 const app = express();
 app.use('*', cors({
@@ -15,7 +15,8 @@ app.use('*', cors({
 app.get('/data/:name', (req, res) => {
 
   const options = {
-    root: __dirname + '/data/',
+    // root: __dirname + '/../data/',
+    root: path.join(__dirname, '../data/'),
     dotfiles: 'deny'
   }
 

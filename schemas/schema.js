@@ -1,6 +1,6 @@
-const { gql } = require('apollo-server-express');
+import { gql } from 'apollo-server-express';
 
-export let typeDefs = gql`
+const typeDefs = gql`
 
   interface INode  {
     id: ID!
@@ -114,3 +114,5 @@ export let typeDefs = gql`
   }
 
 `;
+
+export default typeDefs;

@@ -6,7 +6,6 @@ import assign from 'lodash.assign';
 import moment from 'moment';
 import esb from 'elastic-builder';
 import casual from 'casual';
-import client from '../elasticsearch/connection.js';
 import clustersData from '../data/clusters.json';
 
 import VehicleTypeDistribution from  './VehicleTypeDistribution';
@@ -172,4 +171,4 @@ export const resolvers = {
       return gate.execute(from, till, "OUT");
     }
   }
-}
+};
