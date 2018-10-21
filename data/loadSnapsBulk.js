@@ -130,6 +130,9 @@ let bulk = [];
                                               '${direction}',
                                               '${vehicleType}',
                                               '${dt.format('YYYY-MM-DDTHH:mm:ss')}')`;
+               // MySQL stores TIMEDATE values without timezone.
+               // Client timezone is indicated per connection basis
+               // e.g. SET time_zone = '+00:00';
                 conn.query(sqlQuery, (err, result) => {
                   if( err ) { console.error(err) }
                   //console.log(`Result: ${JSON.stringify(result.affectedRows)}`);
@@ -140,7 +143,7 @@ let bulk = [];
                   lpr: lpr,
                   direction: direction,
                   vehicleType: vehicleType,
-                  dateTime: dt.format('YYYY-MM-DDTHH:mm:ss')
+                  dateTime: dt.format('YYYY-MM-DDTHH:mm:ssZ')
                 };
                 bulk.push(
                    { index: {_index: 'snaps', _type: 'doc' } },
@@ -165,7 +168,7 @@ let bulk = [];
                   lpr: lpr,
                   direction: direction,
                   vehicleType: vehicleType,
-                  dateTime: dt.format('YYYY-MM-DDTHH:mm:ss')
+                  dateTime: dt.format('YYYY-MM-DDTHH:mm:ssZ')
                 };
                 bulk.push(
                    { index: {_index: 'snaps', _type: 'doc' } },

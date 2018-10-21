@@ -9,7 +9,7 @@ import esSubscriber from './esSubscriber';
 import regionData from '../data/regions.json';
 import clustersData from '../data/clusters.json';
 
-const startDate = moment('01/10/2018T00:00:00', 'DD/MM/YYYY');
+const startDate = moment('01/09/2018T00:00:00', 'DD/MM/YYYY');
 const endDate = moment();
 
 const vehicleTypes = ['car', 'truck', 'motorbike', 'bus'];
@@ -62,7 +62,7 @@ setInterval(() => {
     lpr: lpr,
     direction: direction,
     vehicleType: vehicleType,
-    dateTime: dt.format('YYYY-MM-DDTHH:mm:ss')
+    dateTime: dt.format('YYYY-MM-DDTHH:mm:ssZ')
   };
 
   subject.next(record);
@@ -75,7 +75,7 @@ setInterval(() => {
     lpr: lpr,
     direction: direction,
     vehicleType: vehicleType,
-    dateTime: dt.format('YYYY-MM-DDTHH:mm:ss')
+    dateTime: dt.format('YYYY-MM-DDTHH:mm:ssZ')
   };
   subject.next(record2);
 

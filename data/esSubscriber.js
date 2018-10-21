@@ -5,6 +5,8 @@ const esSubscriber = async(snap) => {
 
   try {
 
+    snap.date = snap.date.format('YYYY-MM-DDTHH:mm:ssZ')
+
     const response = await client.index({
       index: 'snaps',
       type: 'doc',
