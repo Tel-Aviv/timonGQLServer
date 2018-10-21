@@ -16,7 +16,7 @@ class HourlyDistribution {
     this.date = date;
   }
 
-  execute() {
+  async execute() {
 
     const regionId = this.regionId;
     let region = regionsData.regions.find( _region => {
@@ -36,9 +36,6 @@ class HourlyDistribution {
     const requestBody = esb.requestBodySearch()
     .query(
       esb.boolQuery()
-        .must(
-                esb.matchQuery("direction", 'IN'),
-              )
         .filter([
                     esb.termsQuery("cameraId", cameraIds),
                     esb.rangeQuery('dateTime')
@@ -48,34 +45,40 @@ class HourlyDistribution {
 
     )
     .agg(
-      esb.dateHistogramAggregation(
-                  'histo',
-                  'dateTime',
-                  '1h'
-              ).timeZone('+03:00')
+        esb.dateHistogramAggregation('histo', 'dateTime', '1H')
+            .timeZone('+03:00')
+        .agg(
+            esb.termsAggregation('directions', 'direction')
+        )
     )
 
-    return client.search({
+    const response = await client.search({
       size: 0,
       index: 'snaps',
       body: requestBody.toJSON()
-    }).then( response => {
-
-      const labels = [];
-      const serieValues = [];
-
-      response.aggregations.histo.buckets.map( bucket => {
-          const label = moment(bucket.key_as_string).format('hh:mm');
-          labels.push(label);
-          serieValues.push(bucket.doc_count);
-      });
-
-      const values = [];
-      values.push(serieValues);
-
-      series.push(new Serie(labels,values));
-      return series;
     });
+
+    const labels = [];
+    const ins = [];
+    const outs = [];
+
+    response.aggregations.histo.buckets.map( bucket => {
+        const label = moment(bucket.key_as_string).utc().format('HH:mm');
+        labels.push(label);
+        bucket.directions.buckets.map((_doc) => {
+          if (_doc.key === 'in')
+            ins.push(_doc.doc_count);
+          else if (_doc.key === 'out')
+            outs.push(_doc.doc_count)
+        })
+    });
+
+    const values = [];
+    values.push(ins);
+    values.push(outs);
+
+    series.push(new Serie(labels,values));
+    return series;
 
   }
 

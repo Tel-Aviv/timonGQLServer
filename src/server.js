@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 const { ApolloServer, AuthenticationError } = require('apollo-server-express');
 import base64 from 'base-64';
-import typeDefs from './schema.js';
+import typeDefs from '../schemas/schema.js';
 const resolvers = require('./resolvers.js').resolvers;
 
 const app = express();

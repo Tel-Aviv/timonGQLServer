@@ -36,9 +36,6 @@ class DayOfWeekDistribution {
     const requestBody = esb.requestBodySearch()
       .query(
         esb.boolQuery()
-          .must(
-                  esb.matchQuery("direction", "IN"),
-                )
           .filter([
                     esb.termsQuery("cameraId", cameraIds),
                     esb.rangeQuery('dateTime')
@@ -51,16 +48,20 @@ class DayOfWeekDistribution {
       // scripts within aggregations
       let query = requestBody.toJSON();
       query.aggs = JSON.parse(`{
-        "myAgg" : {
-               "terms": {
-                  "script": {
-                    "lang": "painless",
-                    "source": "doc['dateTime'].value.toString('E')"
-                  },
-                  "order": {
-                      "_key": "asc"
-                  }
+        "myAgg": {
+          "terms": {
+            "script": {
+              "lang": "painless",
+              "source": "doc['dateTime'].value.toString('E')"
+            }
+          },
+          "aggs": {
+            "directions": {
+              "terms": {
+                "field": "direction"
                 }
+            }
+          }
         }
       }`);
 
@@ -68,25 +69,43 @@ class DayOfWeekDistribution {
 
     try {
 
-      const response = await client.search({
-        index: 'snaps',
-        size: 0, // omit hits from output
-        body: query
-      });
+    const response = await client.search({
+      index: 'snaps',
+      size: 0, // omit hits from output
+      body: query
+    });
 
       //console.log(response.aggregations.myAgg.buckets);
 
       const labels = [];
       const values = [];
-      const serie = [];
+      const ins = [];
+      const outs = [];
+      const orderDocs = [];
+      let docsByDay = {};
+      let dayOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-      response.aggregations.myAgg.buckets.map( doc => {
-        labels.push(doc.key);
-        serie.push(doc.doc_count);
+      response.aggregations.myAgg.buckets.map( (doc,  index)=> {
+        docsByDay[doc.key] = doc;
       });
 
-      values.push(serie);
+      dayOfWeek.forEach(day => {
+        orderDocs.push(docsByDay[day]);
+      });
 
+      orderDocs.forEach( (doc, index) => {
+
+        labels.push(dayOfWeek[index]);
+        doc.directions.buckets.map((_doc) => {
+          if (_doc.key === 'in')
+            ins.push(_doc.doc_count);
+          if (_doc.key === 'out')
+            outs.push(_doc.doc_count)
+        })
+      });
+
+      values.push(ins);
+      values.push(outs);
       return new Serie(labels, values);
 
     } catch ( err ) {

@@ -1,5 +1,9 @@
 // @flow
-const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
+// const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
+// var SegfaultHandler = require('segfault-handler');
+var child_process = require('child_process');
+
+import path from 'path';
 import esb from 'elastic-builder';
 import _ from 'lodash';
 import client from '../elasticsearch/connection.js';
@@ -7,6 +11,10 @@ import moment from 'moment';
 import Intersection from './Intersection.js';
 import regionsData from '../data/regions.json';
 import clustersData from '../data/clusters.json';
+
+// SegfaultHandler.registerHandler("crash.log", function(signal, address, stack) {
+//   console.log('SegfaultHander cathed');
+// });
 
 function getCluster(cameraId: number){
 
@@ -55,6 +63,9 @@ class IntersectionDistribution {
         });
 
         while( response.hits.total !== snaps.length ) {
+
+          // var worker = child_process.fork(path.join(__dirname, 'calcIn.js'));
+          // worker.send(response.hits.hits);
 
           snaps = [...snaps, ...response.hits.hits];
 

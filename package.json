@@ -5,12 +5,10 @@
   "main": "./lib/server.js",
   "scripts": {
     "build": "webpack -d",
-
     "pre-build": "babel ./src ./schemas -d lib --source-maps",
     "serve": "yarn pre-build && nodemon --experimental-worker --inspect-brk",
-
     "start": "nodemon ./src/server.js --exec babel-node --presets es2015 --plugins transform-class-properties",
-    "debug": "nodemon ./src/server.js --exec babel-node --presets es2015 --plugins transform-class-properties --inspect-brk",
+    "debug": "nodemon ./src/server.js --inspect-brk --exec babel-node --presets es2015 --plugins transform-class-properties",
     "flow": "flow",
     "test": "jest",
     "create-snaps-index": "babel-node ./elasticsearch/snapsMappings.js",
@@ -50,6 +48,7 @@
     "optimist": "^0.6.1",
     "promise-mysql": "^3.3.1",
     "rxjs": "^6.3.3",
+    "segfault-handler": "^1.0.1",
     "stream-to-promise": "^2.2.0",
     "webpack": "4.6.0",
     "webworker-threads": "^0.7.17"

@@ -92,9 +92,8 @@ class KeplerData {
     var csvStream = csv.createWriteStream({headers: true}),
         writableStream = fs.createWriteStream('.' + fileName);
 
-    streamToPromise(writableStream).then(function () {
-      // resolves undefined
-      console.log('Resolves');
+    streamToPromise(writableStream).then( () => {
+      console.log('Kepler file is written');
     })
 
     // writableStream.on("finish", function(){
@@ -103,7 +102,7 @@ class KeplerData {
 
     csvStream.pipe(writableStream);
 
-    while( snaps.length - 2 )  {
+    while( snaps.length  > 1 )  {
       const snap  = snaps.shift()._source;
       const exCamera = externalCameras.find( camera => {
         return camera.id === snap.cameraId
@@ -131,6 +130,7 @@ class KeplerData {
                             lpr: snap.lpr
                           });
         }
+
       }
     }
 

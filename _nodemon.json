@@ -1,5 +1,6 @@
 {
   "verbose": true,
+  "ignore": ["data/*.csv", "README"],
   "execMap": {
     "js": "node"
   }
