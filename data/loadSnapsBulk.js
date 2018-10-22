@@ -158,7 +158,7 @@ iterations.push(loadSize);
         lpr: lpr,
         direction: direction,
         vehicleType: vehicleType,
-        dateTime: dt.clone().utc().format('YYYY-MM-DDTHH:mm:ssZ')
+        dateTime: dt.clone().format('YYYY-MM-DDTHH:mm:ssZ')
       };
       bulk.push(
           { index: {_index: 'snaps', _type: 'doc' } },
@@ -181,7 +181,7 @@ iterations.push(loadSize);
         lpr: lpr,
         direction: direction,
         vehicleType: vehicleType,
-        dateTime: dt.clone().utc().format('YYYY-MM-DDTHH:mm:ssZ')
+        dateTime: dt.clone().format('YYYY-MM-DDTHH:mm:ssZ')
       };
       bulk.push(
           { index: {_index: 'snaps', _type: 'doc' } },
