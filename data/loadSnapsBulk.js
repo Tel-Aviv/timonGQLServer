@@ -1,7 +1,7 @@
 import client from '../elasticsearch/connection';
 import esb from 'elastic-builder';
 import sql from 'mssql';
-import mysql from 'mysql';
+import mysql from 'promise-mysql';
 import casual from 'casual';
 import moment from 'moment';
 import momentRandom from 'moment-random';
@@ -21,7 +21,7 @@ if( !myArgs.s ) {
   process.exit(0);
 }
 
-const clean = myArgs.c ? true : false;
+let clean = myArgs.c ? true : false;
 console.log(clean);
 
 const tokens = myArgs.t.split(',');
@@ -35,7 +35,7 @@ if( res );
   loadToES = true;
 //console.log(loadToES);
 
-const loadSize = myArgs.s;
+let loadSize = myArgs.s;
 console.log(loadSize);
 
 const mySqlConfig = {
@@ -44,11 +44,12 @@ const mySqlConfig = {
   password: 'dfnc94^*'
 };
 
-//const cameraIds = ['10', '11', '21', '22'];
+
 const vehicleTypes = ['car', 'truck', 'motorbike', 'bus'];
 const directions = ['in', 'out'];
 
 const startDate = moment('01/09/2018T00:00:00', 'DD/MM/YYYY');
+
 const endDate = moment();
 
 // Populate array of place licences
@@ -70,7 +71,6 @@ regionData.regions.map( region => {
       cameraIds.push(camera.id);
     })
 });
-//console.log(cameraIds);
 
 const externalCameraIds = [];
 clustersData.clusters.map( cluster => {
@@ -78,179 +78,140 @@ clustersData.clusters.map( cluster => {
       externalCameraIds.push(camera.id);
    })
 });
-//console.log(externalCameraIds);
 
-let bulk = [];
+let iterations = [];
+while (loadSize > 200000) {
+  iterations.push(200000);
+  loadSize -= 200000;
+}
+iterations.push(loadSize);
 
-( async() => {
-    const conn = mysql.createConnection(mySqlConfig);
-    conn.connect( async(err) => {
-      if( err ) {
-          console.log(`mySQL Connection error: ${err}`);
+
+(async () => {
+
+  try {
+
+    if( clean ) {
+
+      const conn = await mysql.createConnection(mySqlConfig);
+      //let _sqlQuery = `delete from snaps.snaps where id > 0`;
+      let _sqlQuery = "TRUNCATE `snaps`.`snaps`;";
+
+      let result = await conn.query(_sqlQuery);
+      console.log(`mySQL Deleted: ${JSON.stringify(result)} rows`);
+
+      await conn.end();
+
+      let requestBody = esb.requestBodySearch()
+                        .query(
+                            esb.matchAllQuery()
+                        );
+
+
+      let response = await client.deleteByQuery({
+        index: "snaps",
+        scrollSize: 200,
+        body: requestBody.toJSON()
+      });
+      clean = false;
+    }
+  } catch( err ) {
+    console.error(err);
+    process.exit(1);
+  }
+
+  let bulk = [];
+  for (let j = 0; j < iterations.length; j++) {
+    const iteration = iterations[j];
+    bulk = [];
+    let sqlQuery = `insert into snaps.snaps (cameraId, lpr, direction, vehicleType, dateTime)
+            values `;
+    let firstQuery = true;
+
+    let sql_result = {};
+    let response = {};
+    console.log('start loop');
+
+    for(let i = 0; i < iteration; i++) {
+
+      // Insert two records with same lpr
+      let lpr = casual.random_element(vehicles).lpr;
+      let vehicleType = casual.random_element(vehicles).type;
+      let direction = casual.random_element(directions);
+      let cameraId = casual.random_element(externalCameraIds);
+
+      let dt = momentRandom(endDate ,startDate);
+      if (!firstQuery) {
+        sqlQuery += `,`;
       } else {
-
-           let sqlQuery = `delete from snaps.snaps where id > 0`;
-           if( clean ) {
-             conn.query(sqlQuery, (err, result) => {
-               if( err ) {
-                 console.log(err);
-                 process.exit(-1);
-               } else {
-                 console.log(`mySQL Deleted: ${JSON.stringify(result.affectedRows)} rows`);
-               }
-
-             });
-          }
-
-           let requestBody = esb.requestBodySearch()
-                              .query(
-                                  esb.matchAllQuery()
-                              );
-           let response = {};
-           if( clean ) {
-            response = await client.deleteByQuery({
-               index: "snaps",
-               scrollSize: 200,
-               body: requestBody.toJSON()
-             });
-           };
-
-           for(let i = 0; i < loadSize; i++) {
-
-               // Insert two records with same lpr
-               const lpr = casual.random_element(vehicles).lpr;
-               const vehicleType = casual.random_element(vehicles).type;
-               const direction = casual.random_element(directions);
-               let cameraId = casual.random_element(externalCameraIds);
-
-               let dt = momentRandom(endDate ,startDate);
-               sqlQuery = `insert into snaps.snaps (cameraId, lpr, direction, vehicleType, dateTime)
-                                       values('${cameraId}',
-                                              '${lpr}',
-                                              '${direction}',
-                                              '${vehicleType}',
-                                              '${dt.format('YYYY-MM-DDTHH:mm:ss')}')`;
-               // MySQL stores TIMEDATE values without timezone.
-               // Client timezone is indicated per connection basis
-               // e.g. SET time_zone = '+00:00';
-                conn.query(sqlQuery, (err, result) => {
-                  if( err ) { console.error(err) }
-                  //console.log(`Result: ${JSON.stringify(result.affectedRows)}`);
-                });
-
-                let record = {
-                  cameraId: cameraId,
-                  lpr: lpr,
-                  direction: direction,
-                  vehicleType: vehicleType,
-                  dateTime: dt.clone().utc().format('YYYY-MM-DDTHH:mm:ssZ')
-                };
-                bulk.push(
-                   { index: {_index: 'snaps', _type: 'doc' } },
-                    record);
-
-                // same lpr, but different time within same date
-                cameraId = casual.random_element(cameraIds);
-                dt = momentRandom(dt.clone().endOf('day'), dt);
-                sqlQuery = `insert into snaps.snaps (cameraId, lpr, direction, vehicleType, dateTime)
-                                       values('${cameraId}',
-                                              '${lpr}',
-                                              '${direction}',
-                                              '${vehicleType}',
-                                              '${dt.format('YYYY-MM-DDTHH:mm:ss')}')`;
-                conn.query(sqlQuery, (err, result) => {
-                  if( err ) { console.error(err) }
-                  //console.log(`Result: ${JSON.stringify(result.affectedRows)}`);
-                });
-
-                let record2 = {
-                  cameraId: cameraId,
-                  lpr: lpr,
-                  direction: direction,
-                  vehicleType: vehicleType,
-                  dateTime: dt.clone().utc().format('YYYY-MM-DDTHH:mm:ssZ')
-                };
-                bulk.push(
-                   { index: {_index: 'snaps', _type: 'doc' } },
-                   record2);
-
-           }
-
-           response = await client.bulk({
-             index: 'snaps',
-             type: 'doc',
-             timeout: '10m',
-             body: bulk
-           });
-           if( response.errors ) {
-             response.items.map( item => {
-                if( item.index.status != 201 ) {
-                  console.log(item.index.error);
-                }
-             });
-           }
-
-          sqlQuery = `select count(*) as count from snaps.snaps`;
-          conn.query(sqlQuery, (err, result) => {
-              if( err ) throw err;
-              console.log(`mySQL Inserted: ${JSON.stringify(result[0].count)}`);
-          });
-
-          conn.end( err => {
-            if( err ) throw err;
-          });
+        firstQuery = false;
       }
 
-    })
+      sqlQuery += `('${cameraId}',
+      '${lpr}',
+      '${direction}',
+      '${vehicleType}',
+      '${dt.format('YYYY-MM-DDTHH:mm:ss')}')`;
+
+      let record = {
+        cameraId: cameraId,
+        lpr: lpr,
+        direction: direction,
+        vehicleType: vehicleType,
+        dateTime: dt.clone().utc().format('YYYY-MM-DDTHH:mm:ssZ')
+      };
+      bulk.push(
+          { index: {_index: 'snaps', _type: 'doc' } },
+          record);
+
+      // same lpr, but different time within same date
+      cameraId = casual.random_element(cameraIds);
+      dt = momentRandom(dt.clone().endOf('day'), dt);
+
+
+      sqlQuery += `,('${cameraId}',
+      '${lpr}',
+      '${direction}',
+      '${vehicleType}',
+      '${dt.format('YYYY-MM-DDTHH:mm:ss')}')`;
+
+
+      let record2 = {
+        cameraId: cameraId,
+        lpr: lpr,
+        direction: direction,
+        vehicleType: vehicleType,
+        dateTime: dt.clone().utc().format('YYYY-MM-DDTHH:mm:ssZ')
+      };
+      bulk.push(
+          { index: {_index: 'snaps', _type: 'doc' } },
+          record2);
+
+    }
+    console.log('send bulk to elastic');
+    response = await client.bulk({
+      index: 'snaps',
+      type: 'doc',
+      timeout: '10m',
+      body: bulk
+    });
+    if( response.errors ) {
+      response.items.map( item => {
+        if( item.index.status != 201 ) {
+          console.log(item.index.error);
+        }
+      });
+    } else {
+      console.log("took: ", response.took);
+    }
+
+    let conn = await mysql.createConnection(mySqlConfig);
+    console.log('send query to mysql');
+    sql_result = await conn.query(sqlQuery);
+    console.log('insert: ', sql_result.affectedRows);
+
+
+    sql_result = await conn.end();
+  }
+
 })();
-
-
-// ( async() => {
-//     try {
-//       let pool = await sql.connect(config);
-//       let result =  await pool.request()
-//                       .query(`delete from snaps`);
-//       console.dir(`Deleted: ${result.rowsAffected}`);
-//
-//       const request = pool.request();
-//       for(let i = 0; i < 500000; i++) {
-//
-//         const cameraId = casual.random_element(cameraIds);
-//         const dt = momentRandom(endDate ,startDate).format('YYYY-MM-DDTHH:mm:ss');
-//         result = await request.query(`insert into snaps (cameraId, lpr, direction, vehicleType, [dateTime])
-//                       values('${cameraId}',
-//                              '${casual.random_element(vehicles).lpr}',
-//                              '${casual.random_element(directions)}',
-//                              '${casual.random_element(vehicles).type}',
-//                              '${dt}')`
-//                      );
-//       }
-//
-//       result = await pool.request()
-//                 .query(`select count(*) as count from snaps`);
-//       console.dir(`Inserted: ${JSON.stringify(result.recordsets[0][0].count)}`);
-//
-//     } catch( err ) {
-//       console.log(`Execution error: ${err}`);
-//     }
-//
-//     process.exit(0);
-//
-// })();
-
-// sql.on('error', err => {
-//     console.error(`Error: ${err}`);
-// })
-
-// const pool = new sql.ConnectionPool(config);
-// console.log(`Pool is created`);
-// pool.connect(config, err => {
-//   console.log(`Trying to connect`);
-//   if( err ) {
-//     console.log(err);
-//     return;
-//   }
-//
-//   console.log(`Connected`);
-//
-// })
