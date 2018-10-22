@@ -143,7 +143,7 @@ let bulk = [];
                   lpr: lpr,
                   direction: direction,
                   vehicleType: vehicleType,
-                  dateTime: dt.format('YYYY-MM-DDTHH:mm:ssZ')
+                  dateTime: dt.clone().utc().format('YYYY-MM-DDTHH:mm:ssZ')
                 };
                 bulk.push(
                    { index: {_index: 'snaps', _type: 'doc' } },
@@ -168,7 +168,7 @@ let bulk = [];
                   lpr: lpr,
                   direction: direction,
                   vehicleType: vehicleType,
-                  dateTime: dt.format('YYYY-MM-DDTHH:mm:ssZ')
+                  dateTime: dt.clone().utc().format('YYYY-MM-DDTHH:mm:ssZ')
                 };
                 bulk.push(
                    { index: {_index: 'snaps', _type: 'doc' } },

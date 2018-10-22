@@ -1,6 +1,7 @@
 // @flow
 import esb from 'elastic-builder';
 import moment from 'moment';
+import numeral from 'numeral';
 import client from '../elasticsearch/connection.js';
 import regionsData from '../data/regions.json';
 import Serie from './Serie.js';
@@ -33,6 +34,9 @@ class HourlyDistribution {
 
     const series = [];
 
+    var offset = (moment().utcOffset())/60;
+    var _offset = numeral(offset).format('+00');
+
     const requestBody = esb.requestBodySearch()
     .query(
       esb.boolQuery()
@@ -41,12 +45,12 @@ class HourlyDistribution {
                     esb.rangeQuery('dateTime')
                       .gte(_from)
                       .lt(_till)
+                      .timeZone(`${_offset}:00`)
                 ])
 
     )
     .agg(
         esb.dateHistogramAggregation('histo', 'dateTime', '1H')
-            .timeZone('+03:00')
         .agg(
             esb.termsAggregation('directions', 'direction')
         )
@@ -63,7 +67,7 @@ class HourlyDistribution {
     const outs = [];
 
     response.aggregations.histo.buckets.map( bucket => {
-        const label = moment(bucket.key_as_string).utc().format('HH:mm');
+        const label = moment(bucket.key_as_string).format('HH:mm');
         labels.push(label);
         bucket.directions.buckets.map((_doc) => {
           if (_doc.key === 'in')
