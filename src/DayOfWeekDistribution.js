@@ -65,7 +65,7 @@ class DayOfWeekDistribution {
         }
       }`);
 
-    //console.log(JSON.stringify(query));
+    // console.log(JSON.stringify(query));
 
     try {
 
@@ -95,13 +95,15 @@ class DayOfWeekDistribution {
 
       orderDocs.forEach( (doc, index) => {
 
-        labels.push(dayOfWeek[index]);
-        doc.directions.buckets.map((_doc) => {
-          if (_doc.key === 'in')
-            ins.push(_doc.doc_count);
-          if (_doc.key === 'out')
-            outs.push(_doc.doc_count)
-        })
+        if( doc && doc.directions ) {
+          labels.push(dayOfWeek[index]);
+          doc.directions.buckets.map((_doc) => {
+            if (_doc.key === 'in')
+              ins.push(_doc.doc_count);
+            if (_doc.key === 'out')
+              outs.push(_doc.doc_count)
+          })
+        }
       });
 
       values.push(ins);
