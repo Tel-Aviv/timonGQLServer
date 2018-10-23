@@ -7,9 +7,6 @@ import fs from 'fs';
 import streamToPromise from 'stream-to-promise';
 import csv from 'fast-csv';
 import ip from 'ip';
-// var os = require("os");
-// var dns = require("dns");
-// const util = require('util');
 import regionsData from '../data/regions.json';
 import clustersData from '../data/clusters.json';
 
@@ -138,27 +135,6 @@ class KeplerData {
     csvStream.end();
 
     const hostname = ip.address();
-
-    // const hostname = os.hostname();
-    //
-    // try {
-    //   const dnsResolve = util.promisify(dns.resolveAny);
-    //   const records = await dnsResolve(hostname);
-    //   console.log(records);
-    // } catch( err ) {
-    //   console.error(err);
-    //   var ifaces = os.networkInterfaces();
-    //
-    //   for (var devName in ifaces) {
-    //     var iface = ifaces[devName];
-    //     if( iface.family === 'IPv4' ) {
-    //       hostname = iface.address;
-    //     }
-    //     console.log(iface);
-    //   }
-    // }
-
-    // return `http://${records[0]}:4000${fileName}`;
     return `http://${hostname}:4000${fileName}`;
   }
 
