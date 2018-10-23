@@ -39,6 +39,7 @@
     "express": "^4.16.4",
     "fast-csv": "^2.4.1",
     "graphql": "^14.0.2",
+    "ip": "^1.1.5",
     "lodash.assign": "^4.2.0",
     "moment": "^2.22.2",
     "moment-random": "^1.0.4",
